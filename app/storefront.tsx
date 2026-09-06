@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ArrowRight, Baby, BriefcaseBusiness, CalendarHeart, Check, ChevronLeft, ChevronRight, Gem, GraduationCap, Heart, Home, Menu, Minus, Plus, Search, ShieldCheck, ShoppingBag, Sparkles, Truck, Upload, X } from "lucide-react";
 import type { Product, SiteSettings } from "@/lib/defaults";
@@ -21,7 +21,15 @@ function ProductCard({product, onOpen}:{product:Product; onOpen:()=>void}) {
 }
 
 export default function Storefront({initial}:Props) {
-  const {settings, products} = initial;
+  const [content, setContent] = useState(initial);
+  const {settings, products} = content;
+  useEffect(()=>{
+    let active=true;
+    fetch("/api/content").then(r=>r.ok?r.json():null).then(data=>{
+      if(active && data?.settings && Array.isArray(data?.products)) setContent(data);
+    }).catch(()=>{});
+    return ()=>{active=false};
+  },[]);
   const [menu, setMenu] = useState(false);
   const [category, setCategory] = useState("Всички");
   const [selected, setSelected] = useState<Product|null>(null);
