@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { defaultProducts, defaultSettings, type Product, type SiteSettings } from "./defaults";
+import { defaultProducts, defaultSettings, normalizeProduct, type Product, type SiteSettings } from "./defaults";
 
 export async function getContent(): Promise<{settings: SiteSettings; products: Product[]}> {
   try {
@@ -7,7 +7,7 @@ export async function getContent(): Promise<{settings: SiteSettings; products: P
     const rows = await env.DB.prepare("SELECT data FROM products ORDER BY position ASC").all<{data:string}>();
     return {
       settings: setting ? {...defaultSettings, ...JSON.parse(setting.data)} : defaultSettings,
-      products: rows.results.length ? rows.results.map((r) => JSON.parse(r.data)) : defaultProducts,
+      products: rows.results.length ? rows.results.map((r) => normalizeProduct(JSON.parse(r.data))) : defaultProducts,
     };
   } catch {
     return { settings: defaultSettings, products: defaultProducts };

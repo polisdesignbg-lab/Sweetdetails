@@ -46,7 +46,7 @@ export const SEO_FAQ = [
   {
     question: "Може ли да поръчам персонализирани сладки за празник онлайн?",
     answer:
-      "Да. Изберете продукт, попълнете детайлите за персонализация, прикачете примерен дизайн и завършете поръчката онлайн. Минималната поръчка е 10 броя.",
+      "Да. Отидете в каталога с бисквитки, изберете продукт и форма, попълнете детайлите за персонализация, прикачете примерен дизайн и завършете поръчката онлайн. Минималната поръчка е 10 броя.",
   },
   {
     question: "Колко време предварително трябва да поръчам?",
@@ -131,7 +131,7 @@ export function buildStructuredData(settings: SiteSettings, products: Product[])
             priceCurrency: "EUR",
             price: product.price,
             availability: "https://schema.org/InStock",
-            url: `${SITE_URL}/#products`,
+            url: `${SITE_URL}/products`,
           },
         },
       })),
@@ -146,7 +146,7 @@ export function buildStructuredData(settings: SiteSettings, products: Product[])
       "@type": "ListItem",
       position: index + 1,
       name: product.title,
-      url: `${SITE_URL}/#products`,
+      url: `${SITE_URL}/products`,
     })),
   };
 
@@ -168,7 +168,7 @@ export function buildStructuredData(settings: SiteSettings, products: Product[])
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Начало", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Персонализирани бисквити", item: `${SITE_URL}/#products` },
+      { "@type": "ListItem", position: 2, name: "Персонализирани бисквити", item: `${SITE_URL}/products` },
     ],
   };
 

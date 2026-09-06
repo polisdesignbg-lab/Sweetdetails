@@ -16,7 +16,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import type { Product, ProductOption, SiteSettings } from "@/lib/defaults";
+import type { CookieShape, Product, ProductOption, SiteSettings } from "@/lib/defaults";
 import { adminFetch, clearAdminToken, getStoredAdminToken, storeAdminToken } from "@/lib/admin-client";
 
 type Props = {
@@ -45,7 +45,14 @@ export default function AdminPanel({ authorized, initial }: Props) {
   const loadContent = useCallback(async () => {
     const data = await fetch("/api/content").then(r => (r.ok ? r.json() : null));
     if (data?.settings) setSettings(data.settings);
-    if (Array.isArray(data?.products)) setProducts(data.products);
+    if (Array.isArray(data?.products)) {
+      setProducts(data.products.map((p: Product) => ({
+        ...p,
+        images: Array.isArray(p.images) ? p.images : [],
+        options: Array.isArray(p.options) ? p.options : [],
+        shapes: Array.isArray(p.shapes) ? p.shapes : [],
+      })));
+    }
   }, []);
 
   const restoreSession = useCallback(async () => {
@@ -168,6 +175,7 @@ export default function AdminPanel({ authorized, initial }: Props) {
       minQuantity: 10,
       images: [],
       options: [],
+      shapes: [],
     };
     setProducts([...products, p]);
     setOpen(p.id);
@@ -262,6 +270,11 @@ export default function AdminPanel({ authorized, initial }: Props) {
                       </label>
                     </div>
                     <ImageEditor product={p} onNotify={notify} update={v => patchProduct(p.id, { images: v })} />
+                    <ShapesEditor
+                      shapes={p.shapes ?? []}
+                      onNotify={notify}
+                      update={v => patchProduct(p.id, { shapes: v })}
+                    />
                     <OptionsEditor options={p.options} update={v => patchProduct(p.id, { options: v })} />
                     <button className="admin-delete-row" type="button" onClick={() => setProducts(products.filter(x => x.id !== p.id))}>
                       <Trash2 size={15} /> Изтрий продукта
@@ -351,6 +364,94 @@ function ImageEditor({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function ShapesEditor({
+  shapes,
+  update,
+  onNotify,
+}: {
+  shapes: CookieShape[];
+  update: (v: CookieShape[]) => void;
+  onNotify: (type: "ok" | "err", text: string) => void;
+}) {
+  const [uploadingId, setUploadingId] = useState("");
+
+  const patch = (id: string, patch: Partial<CookieShape>) =>
+    update(shapes.map(s => (s.id === id ? { ...s, ...patch } : s)));
+
+  const addShape = () =>
+    update([...shapes, { id: crypto.randomUUID(), name: "Нова форма", image: "" }]);
+
+  const upload = async (id: string, file: File) => {
+    setUploadingId(id);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const r = await adminFetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = await r.json();
+      if (!r.ok) {
+        onNotify("err", data.error === "invalid file" ? "Невалиден файл (JPG, PNG или WebP до 8MB)." : "Качването не успя.");
+        return;
+      }
+      patch(id, { image: data.url });
+      onNotify("ok", "Снимката на формата е качена.");
+    } catch {
+      onNotify("err", "Грешка при качване на снимка.");
+    } finally {
+      setUploadingId("");
+    }
+  };
+
+  return (
+    <div className="admin-block">
+      <div className="admin-block-head">
+        <div>
+          <h3>Форми на бисквитките</h3>
+          <p>Добавяй само формите, подходящи за този повод. Клиентът избира при поръчка.</p>
+        </div>
+        <button className="admin-btn admin-btn-secondary admin-btn-sm" type="button" onClick={addShape}>
+          <Plus size={14} /> Добави форма
+        </button>
+      </div>
+      {!shapes.length && (
+        <p className="admin-shapes-empty">Няма добавени форми. Добави например кръг, сърце, кръст…</p>
+      )}
+      <div className="admin-shapes-list">
+        {shapes.map(shape => (
+          <div className="admin-shape-row" key={shape.id}>
+            <div className="admin-shape-preview">
+              {shape.image ? <img src={shape.image} alt={shape.name} /> : <span>🍪</span>}
+            </div>
+            <div className="admin-shape-fields">
+              <input
+                value={shape.name}
+                placeholder="Име на формата"
+                onChange={e => patch(shape.id, { name: e.target.value })}
+              />
+              <label className="admin-shape-upload">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={e => e.target.files?.[0] && upload(shape.id, e.target.files[0])}
+                />
+                <ImagePlus size={14} />
+                {uploadingId === shape.id ? "Качване…" : shape.image ? "Смени снимка" : "Качи снимка"}
+              </label>
+            </div>
+            <button
+              className="admin-btn admin-btn-ghost admin-btn-sm"
+              type="button"
+              aria-label="Изтрий форма"
+              onClick={() => update(shapes.filter(s => s.id !== shape.id))}
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
