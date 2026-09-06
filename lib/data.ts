@@ -1,13 +1,22 @@
 import { env } from "cloudflare:workers";
 import { defaultProducts, defaultSettings, type Product, type SiteSettings } from "./defaults";
 
+function normalizeProduct(raw: Product): Product {
+  return {
+    ...raw,
+    shapes: Array.isArray(raw.shapes) ? raw.shapes : [],
+    images: Array.isArray(raw.images) ? raw.images : [],
+    options: Array.isArray(raw.options) ? raw.options : [],
+  };
+}
+
 export async function getContent(): Promise<{settings: SiteSettings; products: Product[]}> {
   try {
     const setting = await env.DB.prepare("SELECT data FROM settings WHERE id = 1").first<{data:string}>();
     const rows = await env.DB.prepare("SELECT data FROM products ORDER BY position ASC").all<{data:string}>();
     return {
       settings: setting ? {...defaultSettings, ...JSON.parse(setting.data)} : defaultSettings,
-      products: rows.results.length ? rows.results.map((r) => JSON.parse(r.data)) : defaultProducts,
+      products: rows.results.length ? rows.results.map((r) => normalizeProduct(JSON.parse(r.data))) : defaultProducts,
     };
   } catch {
     return { settings: defaultSettings, products: defaultProducts };

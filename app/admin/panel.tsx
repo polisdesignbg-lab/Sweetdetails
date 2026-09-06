@@ -16,7 +16,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import type { Product, ProductOption, SiteSettings } from "@/lib/defaults";
+import type { Product, ProductOption, ProductShape, SiteSettings } from "@/lib/defaults";
 import { adminFetch, clearAdminToken, getStoredAdminToken, storeAdminToken } from "@/lib/admin-client";
 
 type Props = {
@@ -167,6 +167,7 @@ export default function AdminPanel({ authorized, initial }: Props) {
       price: 0,
       minQuantity: 10,
       images: [],
+      shapes: [],
       options: [],
     };
     setProducts([...products, p]);
@@ -262,6 +263,7 @@ export default function AdminPanel({ authorized, initial }: Props) {
                       </label>
                     </div>
                     <ImageEditor product={p} onNotify={notify} update={v => patchProduct(p.id, { images: v })} />
+                    <ShapesEditor product={p} onNotify={notify} update={v => patchProduct(p.id, { shapes: v })} />
                     <OptionsEditor options={p.options} update={v => patchProduct(p.id, { options: v })} />
                     <button className="admin-delete-row" type="button" onClick={() => setProducts(products.filter(x => x.id !== p.id))}>
                       <Trash2 size={15} /> Изтрий продукта
@@ -355,6 +357,75 @@ function ImageEditor({
   );
 }
 
+function ShapesEditor({
+  product,
+  update,
+  onNotify,
+}: {
+  product: Product;
+  update: (v: ProductShape[]) => void;
+  onNotify: (type: "ok" | "err", text: string) => void;
+}) {
+  const shapes = product.shapes ?? [];
+  const patch = (id: string, patch: Partial<ProductShape>) =>
+    update(shapes.map(s => (s.id === id ? { ...s, ...patch } : s)));
+
+  const upload = async (id: string, f: File) => {
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      const r = await adminFetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = await r.json();
+      if (!r.ok) {
+        onNotify("err", "Качването на снимка не успя.");
+        return;
+      }
+      patch(id, { image: data.url });
+      onNotify("ok", "Снимката на формата е качена.");
+    } catch {
+      onNotify("err", "Грешка при качване.");
+    }
+  };
+
+  return (
+    <div className="admin-block">
+      <div className="admin-block-head">
+        <div>
+          <h3>Форми на бисквитката</h3>
+          <p>Клиентът избира форма с малка снимка при поръчка.</p>
+        </div>
+        <button
+          className="admin-btn admin-btn-secondary admin-btn-sm"
+          type="button"
+          onClick={() => update([...shapes, { id: crypto.randomUUID(), label: "Нова форма", image: "" }])}
+        >
+          <Plus size={14} /> Добави форма
+        </button>
+      </div>
+      {shapes.map(s => (
+        <div className="admin-shape-row" key={s.id}>
+          <div className="admin-shape-preview">
+            {s.image ? <img src={s.image} alt={s.label} /> : <span>?</span>}
+            <label className="admin-shape-upload">
+              <input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => e.target.files?.[0] && upload(s.id, e.target.files[0])} />
+              <ImagePlus size={14} />
+            </label>
+          </div>
+          <input
+            value={s.label}
+            placeholder="Име на формата"
+            onChange={e => patch(s.id, { label: e.target.value })}
+          />
+          <button className="admin-btn admin-btn-ghost admin-btn-sm" type="button" onClick={() => update(shapes.filter(x => x.id !== s.id))}>
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ))}
+      {!shapes.length && <p className="admin-empty-hint">Няма добавени форми. Клиентът няма да вижда избор на форма.</p>}
+    </div>
+  );
+}
+
 function OptionsEditor({ options, update }: { options: ProductOption[]; update: (v: ProductOption[]) => void }) {
   const patch = (i: number, v: Partial<ProductOption>) => update(options.map((o, x) => (x === i ? { ...o, ...v } : o)));
 
@@ -387,6 +458,15 @@ function OptionsEditor({ options, update }: { options: ProductOption[]; update: 
               placeholder="Опции, разделени със запетая"
               value={o.choices?.map(c => c.label).join(", ") || ""}
               onChange={e => patch(i, { choices: e.target.value.split(",").map(x => ({ label: x.trim() })).filter(x => x.label) })}
+            />
+          ) : o.type === "checkbox" ? (
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Доп. цена €"
+              value={o.addonPrice ?? ""}
+              onChange={e => patch(i, { addonPrice: e.target.value ? Number(e.target.value) : undefined })}
             />
           ) : (
             <span />

@@ -341,16 +341,89 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   display: flex; align-items: center; gap: 6px;
 }
 .static-fallback .favorites-title h2 svg { width: 26px; height: 26px; }
-.static-fallback .favorites-title > button {
+.static-fallback .favorites-title > button,
+.static-fallback .favorites-title > .view-all-link {
   position: relative; z-index: 1;
   border: 0; background: transparent;
   display: flex; align-items: center; gap: 4px;
   font-weight: 800; font-size: 12px;
   color: var(--ink); cursor: pointer;
   white-space: nowrap;
+  text-decoration: none;
 }
-.static-fallback .favorites-title > button svg { width: 14px; height: 14px; }
-.static-fallback .filters { display: none; }
+.static-fallback .favorites-title > button svg,
+.static-fallback .favorites-title > .view-all-link svg { width: 14px; height: 14px; }
+.static-fallback .filters {
+  display: none;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 22px;
+}
+.static-fallback.products-page .filters {
+  display: flex;
+}
+.static-fallback .filters button {
+  border: 1px solid #f0d8e1;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  color: #6b555d;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.static-fallback .filters button:hover,
+.static-fallback .filters button.active {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+}
+.static-fallback .products-page-hero {
+  padding: calc(var(--header-h) + 12px) var(--page-pad) 8px;
+  max-width: var(--page-max);
+  margin: 0 auto;
+}
+.static-fallback .products-page-hero-inner {
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.static-fallback .products-page-hero h2 {
+  font-family: 'Caveat', cursive;
+  color: #d92c6d;
+  font-size: clamp(36px, 6vw, 52px);
+  margin: 8px 0;
+  line-height: 1;
+}
+.static-fallback .products-page-hero p {
+  color: #7a6270;
+  margin: 0;
+  line-height: 1.6;
+}
+.static-fallback .products-full {
+  padding-top: 12px;
+}
+.static-fallback.products-page .product-copy > p.product-desc {
+  display: block !important;
+  font-size: 12px;
+  color: #7a6270;
+  line-height: 1.45;
+  margin: 4px 0 8px;
+  min-height: 34px;
+}
+.static-fallback .product-badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background: #fff;
+  color: #d92c6d;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  z-index: 2;
+}
 .static-fallback .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -748,6 +821,78 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 .static-fallback .check input:checked + span { background: var(--pink); color: #fff; border-color: var(--pink); }
 .static-fallback .check span svg { width: 14px; opacity: 0; }
 .static-fallback .check input:checked + span svg { opacity: 1; }
+.static-fallback .field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.static-fallback .shape-picker { display: grid; gap: 8px; }
+.static-fallback .shape-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 10px;
+}
+.static-fallback .shape-option {
+  border: 2px solid #f0d8e1;
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 8px;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.static-fallback .shape-option.active {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px rgba(233, 46, 114, 0.12);
+}
+.static-fallback .shape-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff5f8;
+  border: 1px solid #f0d8e1;
+  display: grid;
+  place-items: center;
+}
+.static-fallback .shape-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.static-fallback .shape-placeholder {
+  font-weight: 800;
+  color: #d84b7d;
+  font-size: 22px;
+}
+.static-fallback .shape-option strong {
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.static-fallback .option-block { display: grid; gap: 6px; }
+.static-fallback .packaging-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff8ee;
+  border: 1px solid #f5dfc0;
+  color: #9a6b2e;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.static-fallback .addon-price {
+  margin-left: 6px;
+  font-style: normal;
+  color: var(--pink);
+  font-weight: 800;
+  font-size: 13px;
+}
 .static-fallback .upload {
   border: 1px dashed #d8bec7;
   background: #fff3f7;
