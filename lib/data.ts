@@ -1,5 +1,18 @@
 import { env } from "cloudflare:workers";
-import { defaultProducts, defaultSettings, defaultShapesByProductId, type Product, type SiteSettings } from "./defaults";
+import { defaultProducts, defaultSettings, defaultShapesByProductId, type Product, type ProductOption, type SiteSettings } from "./defaults";
+
+function normalizeOptions(raw: ProductOption[], productId: string): ProductOption[] {
+  const fallback = defaultProducts.find(p => p.id === productId)?.options ?? [];
+  const source = Array.isArray(raw) && raw.length ? raw : fallback;
+  const merged = source.map(o => ({
+    ...o,
+    required: o.id === "occasion" ? true : o.id === "printText" || o.id === "brief" ? false : o.required,
+  }));
+  for (const opt of fallback) {
+    if (!merged.some(o => o.id === opt.id)) merged.push(opt);
+  }
+  return merged;
+}
 
 function normalizeProduct(raw: Product): Product {
   const shapes = Array.isArray(raw.shapes) && raw.shapes.length
@@ -9,7 +22,7 @@ function normalizeProduct(raw: Product): Product {
     ...raw,
     shapes,
     images: Array.isArray(raw.images) ? raw.images : [],
-    options: Array.isArray(raw.options) ? raw.options : [],
+    options: normalizeOptions(raw.options, raw.id),
   };
 }
 

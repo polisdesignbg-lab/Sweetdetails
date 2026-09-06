@@ -437,6 +437,15 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   background: #fff;
   overflow: visible;
 }
+.static-fallback .product-card-clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.static-fallback .product-card-clickable:hover { transform: translateY(-2px); }
+.static-fallback .product-card-clickable:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 3px;
+}
 .static-fallback .product-image {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -758,12 +767,36 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   backdrop-filter: blur(6px);
   display: flex; justify-content: flex-end;
 }
+.static-fallback .shape-picker-required {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px dashed #f0a8c4;
+  background: #fff8fb;
+}
+.static-fallback .form-message {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+.static-fallback .form-message.ok {
+  background: #edf9f4;
+  color: #2f7357;
+  border: 1px solid #c8ead9;
+}
+.static-fallback .form-message.err {
+  background: #fff0f3;
+  color: #b92f51;
+  border: 1px solid #f5c9da;
+}
 .static-fallback .modal {
   width: min(560px, 100%);
   height: 100%;
   overflow: auto;
   background: #fffafd;
-  padding: 32px 24px;
+  padding: 32px 24px 120px;
   position: relative;
 }
 .static-fallback .modal-close {
@@ -916,10 +949,18 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 .static-fallback .contact-fields h3 { margin: 0; font-size: 15px; color: #36131f; }
 .static-fallback .contact-hint { margin: 0 0 2px; font-size: 12px; color: #8d7780; line-height: 1.5; }
 .static-fallback .checkout {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 14px;
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 8px;
+  margin-top: 8px;
+  background: #fffafd;
   border-top: 1px solid #ebdce2;
   gap: 12px;
+  box-shadow: 0 -8px 24px rgba(255, 250, 253, 0.95);
+  z-index: 2;
 }
 .static-fallback .checkout strong { font-size: 22px; }
 .static-fallback .checkout button {
@@ -934,11 +975,6 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   white-space: nowrap;
 }
 .static-fallback .checkout button:disabled { opacity: 0.55; }
-.static-fallback .form-message {
-  padding: 11px; border-radius: 10px;
-  background: #edf9f4; color: #34735a;
-  font-size: 14px;
-}
 
 /* Tablet */
 @media (max-width: 900px) {
