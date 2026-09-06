@@ -9,7 +9,41 @@ body{margin:0;background:#fff;color:var(--ink);font-family:'Nunito',sans-serif}
 .static-fallback .left-menu{justify-self:start;width:52px;height:52px;border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer}
 .static-fallback .left-menu iconify-icon{font-size:38px}
 .static-fallback .centered-logo{position:static;transform:none;width:116px;height:116px;display:block;align-self:center}
-.static-fallback .brand-logo img{width:116px;height:116px;border-radius:50%;object-fit:cover;display:block;filter:drop-shadow(0 5px 10px rgba(112,51,72,.12))}
+.static-fallback .brand-logo img{width:auto;height:116px;max-width:140px;border-radius:0;object-fit:contain;display:block;filter:drop-shadow(0 5px 10px rgba(112,51,72,.12))}
+.static-fallback .left-menu svg,.static-fallback .nav-actions svg{width:28px;height:28px}
+.static-fallback .occasion-row svg{width:43px;height:43px;color:#d84b7d}
+.static-fallback .shop-nav{position:sticky;top:0}
+.static-fallback .hero-banner-full{height:auto;min-height:0;display:block;background:#ffd6e4;padding:0}
+.static-fallback .hero-banner-wrap{position:relative;width:100%;aspect-ratio:16/9;max-height:540px;overflow:hidden}
+.static-fallback .hero-banner-wrap img,.static-fallback .hero-banner-wrap .hero-banner-img,.static-fallback .hero-banner-img{object-fit:cover;object-position:center;width:100%;height:100%;position:absolute;inset:0}
+.static-fallback .hero-banner-wrap>span{position:absolute!important;inset:0!important}
+.static-fallback .hero-cta-overlay{position:absolute;left:7%;bottom:28%;width:min(220px,42vw);height:min(56px,11vw);opacity:0;z-index:5;border-radius:999px}
+.static-fallback .hero-dots{display:flex;justify-content:center;gap:8px;padding:12px 0 18px;background:linear-gradient(180deg,#ffd6e4,#fff)}
+.static-fallback .hero-dots span{width:8px;height:8px;border-radius:50%;background:#f5b8cc}
+.static-fallback .hero-dots span.active{background:#e92e72;width:10px;height:10px}
+.static-fallback .favorites-title{justify-content:space-between;padding:0 4px}
+.static-fallback .favorites-title>button{border:0;background:transparent;display:flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:#321a23;cursor:pointer;position:relative;z-index:1}
+.static-fallback .favorites-title>button svg{width:16px}
+.static-fallback .price-row button{display:grid;place-items:center;font-size:0}
+.static-fallback .price-row button svg{width:22px;height:22px;color:#c43368}
+.static-fallback .price-row button:after{display:none}
+.static-fallback .story-banner{background:linear-gradient(90deg,#fff0f5,#ffe4ee);padding:28px 5%}
+.static-fallback .story-banner-inner{display:flex;align-items:center;gap:16px;max-width:1180px;margin:0 auto}
+.static-fallback .story-banner-cookie{border-radius:50%;object-fit:cover;flex:0 0 72px}
+.static-fallback .story-banner p{margin:0;font-family:'Caveat',cursive;font-size:clamp(24px,4vw,34px);color:#8e3658;display:flex;align-items:center;gap:8px;line-height:1.2}
+.static-fallback .mobile-bottom svg{width:24px;height:24px}
+.static-fallback .mobile-bottom .bottom-active{color:var(--pink)}
+.static-fallback .footer-logo-image{width:128px;height:auto;border-radius:0;object-fit:contain}
+.static-fallback .seo-h1{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.static-fallback .seo-copy{font-size:16px;line-height:1.75;color:#735e66;margin-top:16px}
+.static-fallback .seo-faq{max-width:1180px;margin:0 auto;padding:60px 28px 80px;background:#fff}
+.static-fallback .seo-faq h2{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,44px);margin:8px 0 28px;color:#36131f}
+.static-fallback .faq-list{display:grid;gap:12px}
+.static-fallback .faq-item{border:1px solid #f0d8e1;border-radius:16px;background:#fffafc;padding:0 18px}
+.static-fallback .faq-item summary{cursor:pointer;font-weight:800;padding:16px 0;list-style:none;color:#5c2f3f}
+.static-fallback .faq-item summary::-webkit-details-marker{display:none}
+.static-fallback .faq-item p{margin:0 0 16px;line-height:1.7;color:#6f5860;font-size:15px}
+@media(max-width:700px){.static-fallback .seo-faq{padding:40px 16px 60px}}
 .static-fallback .nav-actions{justify-self:end;display:flex;gap:28px;align-items:center}
 .static-fallback .nav-actions a{position:relative;color:var(--ink);display:grid;place-items:center;text-decoration:none}
 .static-fallback .nav-actions iconify-icon{font-size:34px}
@@ -32,12 +66,13 @@ body{margin:0;background:#fff;color:var(--ink);font-family:'Nunito',sans-serif}
 .static-fallback .steps{background:#fff2f6;padding:50px 6%;display:grid;grid-template-columns:.9fr 1.5fr;gap:50px}.static-fallback .steps h2,.static-fallback .story h2{font-family:'Cormorant Garamond',serif}.static-fallback .story{padding:50px 6%;background:#fff}.static-fallback footer{background:#3b1724;color:#fff;padding-bottom:95px}.static-fallback footer a{color:#fff}
 .static-fallback .mobile-bottom{position:fixed;z-index:100;left:0;right:0;bottom:0;height:76px;background:rgba(255,255,255,.97);display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #f2c9d8;box-shadow:0 -8px 25px rgba(72,25,42,.08)}.static-fallback .mobile-bottom a{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;color:#29171d;text-decoration:none;font-size:12px;font-weight:800}.static-fallback .mobile-bottom iconify-icon{font-size:24px}.static-fallback .mobile-bottom .bottom-order{color:var(--pink)}
 
-@media(max-width:700px){
+ @media(max-width:700px){
  .static-fallback .announcement{height:34px;justify-content:center;font-size:11px;white-space:nowrap}.static-fallback .announcement span:first-child{display:none}
- .static-fallback .shop-nav{height:104px;min-height:104px;padding:0 18px}.static-fallback .centered-logo,.static-fallback .brand-logo img{width:102px;height:102px}.static-fallback .left-menu{width:44px}.static-fallback .left-menu iconify-icon{font-size:31px}.static-fallback .nav-actions{gap:18px}.static-fallback .nav-actions iconify-icon{font-size:26px}
- .static-fallback .hero{height:470px;min-height:470px}.static-fallback .hero-copy{width:58%;padding:36px 0 28px 22px;justify-content:center}.static-fallback .hero-copy:after{inset:0 -48% 0 0}.static-fallback .kicker{font-size:10px;letter-spacing:.12em;margin-bottom:12px}.static-fallback .hero h1{font-size:37px;line-height:.9;margin-bottom:16px}.static-fallback .hero-copy>p{font-size:13px;line-height:1.35;margin-bottom:18px;max-width:220px}.static-fallback .hero-actions{display:block}.static-fallback .hero-actions .primary{min-width:0;width:175px;height:47px;padding:0 13px;font-size:13px}.static-fallback .hero-actions>span{display:none!important}.static-fallback .mini-notes{grid-template-columns:1fr;gap:3px;margin-top:18px;padding-top:10px;max-width:180px}.static-fallback .mini-notes div:nth-child(n+2){display:none}.static-fallback .hero-visual{left:42%}.static-fallback .hero-visual>img{object-position:63% center}
- .static-fallback .occasion-row{grid-template-columns:repeat(6,82px);overflow-x:auto;gap:7px;padding:20px 10px 16px;scrollbar-width:none}.static-fallback .occasion-row::-webkit-scrollbar{display:none}.static-fallback .occasion-row span{width:68px;height:68px}.static-fallback .occasion-row iconify-icon{font-size:31px}.static-fallback .occasion-row strong{font-size:11px}
- .static-fallback .products{padding:12px 10px 28px}.static-fallback .favorites-title:before{width:230px;height:43px}.static-fallback .favorites-title h2{font-size:38px}.static-fallback .filters{display:none}.static-fallback .grid{grid-template-columns:repeat(3,1fr);gap:8px}.static-fallback .product-image{border-radius:10px}.static-fallback .product-copy{padding:8px 1px}.static-fallback .product-copy h3{font-size:10px;min-height:26px}.static-fallback .price-row small{display:none}.static-fallback .price-row strong{font-size:10px}.static-fallback .price-row button{width:27px;height:27px}.static-fallback .price-row button:after{font-size:19px}
+ .static-fallback .shop-nav{height:104px;min-height:104px;padding:0 18px}.static-fallback .centered-logo,.static-fallback .brand-logo img{height:102px;max-width:120px}.static-fallback .left-menu{width:44px}.static-fallback .left-menu svg{width:26px;height:26px}.static-fallback .nav-actions{gap:18px}.static-fallback .nav-actions svg{width:24px;height:24px}
+ .static-fallback .hero-banner-wrap{aspect-ratio:4/3;max-height:470px}.static-fallback .hero-cta-overlay{left:6%;bottom:30%;width:min(175px,44vw);height:min(47px,10vw)}
+ .static-fallback .occasion-row{grid-template-columns:repeat(6,82px);overflow-x:auto;gap:7px;padding:20px 10px 16px;scrollbar-width:none}.static-fallback .occasion-row::-webkit-scrollbar{display:none}.static-fallback .occasion-row span{width:68px;height:68px}.static-fallback .occasion-row svg{width:31px;height:31px}.static-fallback .occasion-row strong{font-size:11px}
+ .static-fallback .products{padding:12px 10px 28px}.static-fallback .favorites-title:before{width:230px;height:43px}.static-fallback .favorites-title h2{font-size:38px}.static-fallback .filters{display:none}.static-fallback .grid{grid-template-columns:repeat(3,1fr);gap:8px}.static-fallback .product-image{border-radius:10px}.static-fallback .product-copy{padding:8px 1px}.static-fallback .product-copy h3{font-size:10px;min-height:26px}.static-fallback .price-row small{display:none}.static-fallback .price-row strong{font-size:10px}.static-fallback .price-row button{width:27px;height:27px}.static-fallback .price-row button svg{width:19px;height:19px}
+ .static-fallback .story-banner{padding:22px 16px}.static-fallback .story-banner-cookie{width:56px;height:56px;flex-basis:56px}.static-fallback .story-banner p{font-size:22px}
  .static-fallback .steps{padding:36px 20px;display:block}.static-fallback .steps>div{margin-bottom:24px}.static-fallback .story{padding:36px 20px}.static-fallback footer{padding-left:20px;padding-right:20px}.static-fallback .mobile-bottom{height:70px}
 }
-@media(max-width:390px){.static-fallback .hero h1{font-size:34px}.static-fallback .hero-copy{padding-left:16px}.static-fallback .centered-logo,.static-fallback .brand-logo img{width:92px;height:92px}.static-fallback .nav-actions{gap:12px}}
+@media(max-width:390px){.static-fallback .hero-banner-wrap{aspect-ratio:3/4;max-height:420px}.static-fallback .hero-cta-overlay{bottom:32%}.static-fallback .centered-logo,.static-fallback .brand-logo img{height:92px;max-width:110px}.static-fallback .nav-actions{gap:12px}}

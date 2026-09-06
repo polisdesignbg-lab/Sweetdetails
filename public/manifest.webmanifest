@@ -1,0 +1,24 @@
+{
+  "name": "Sweet Details — Персонализирани бисквити",
+  "short_name": "Sweet Details",
+  "description": "Персонализирани маслени бисквити с фонданов печат за рожден ден, кръщене, сватба и всеки празник.",
+  "lang": "bg",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fffafc",
+  "theme_color": "#e92e72",
+  "icons": [
+    {
+      "src": "/sweet-details-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
