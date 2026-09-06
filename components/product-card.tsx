@@ -68,8 +68,8 @@ export function ProductCard({
         )}
         <div className="price-row">
           <strong>{formatEuro(product.price)}</strong>
-          <button type="button" aria-label={`Поръчай ${product.title}`} onClick={onOpen}>
-            <Heart />
+          <button type="button" className={showDescription ? "order-btn" : undefined} aria-label={`Поръчай ${product.title}`} onClick={onOpen}>
+            {showDescription ? <>Поръчай</> : <Heart />}
           </button>
         </div>
       </div>

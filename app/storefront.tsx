@@ -129,6 +129,9 @@ export default function Storefront({ initial }: Props) {
           <span />
           <span />
         </div>
+        <a href="/products" className="hero-browse-link">
+          Разгледай всички бисквитки <ArrowRight size={16} />
+        </a>
       </section>
 
       <section className="occasion-row" aria-label="Категории">

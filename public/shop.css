@@ -205,6 +205,27 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   opacity: 0;
   z-index: 5;
   border-radius: 999px;
+  cursor: pointer;
+}
+/* Fallback visible browse link under hero for accessibility */
+.static-fallback .hero-browse-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ef3d80, #d91d63);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 13px;
+  width: fit-content;
+}
+.static-fallback .hero {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 .static-fallback .hero-dots {
   display: flex;
@@ -1041,6 +1062,22 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 .static-fallback.products-page .catalog-grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
 }
+.static-fallback.products-page .order-btn {
+  width: auto !important;
+  height: auto !important;
+  min-height: 34px;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  background: linear-gradient(135deg, #ef3d80, #d91d63) !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+}
+.static-fallback.products-page .order-btn svg { display: none; }
 @media (max-width: 700px) {
   .static-fallback.products-page .catalog-grid {
     grid-template-columns: repeat(2, 1fr);
