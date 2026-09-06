@@ -2,9 +2,19 @@
   "version": 1,
   "include": ["/*"],
   "exclude": [
+    "/_next/*",
+    "/shapes/*",
+    "/shop.css",
+    "/admin.css",
     "/sitemap.xml",
     "/robots.txt",
     "/manifest.webmanifest",
-    "/favicon.svg"
+    "/favicon.svg",
+    "/*.png",
+    "/*.jpg",
+    "/*.jpeg",
+    "/*.webp",
+    "/*.svg",
+    "/*.ico"
   ]
 }
