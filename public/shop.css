@@ -39,41 +39,55 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 }
 .static-fallback .announcement span { display: flex; align-items: center; gap: 7px; }
 
-/* Header */
-.static-fallback .shop-nav {
+/* Header zone — slim bar + floating logo */
+.static-fallback .header-zone {
   position: sticky;
   top: 0;
   z-index: 60;
-  min-height: 130px;
-  padding: 10px 4%;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
+  padding-bottom: clamp(62px, 12vw, 88px);
   background: rgba(255, 255, 255, 0.98);
   border-bottom: 1px solid #f9d9e5;
+}
+.static-fallback .shop-nav {
+  position: relative;
+  z-index: 2;
+  height: 54px;
+  min-height: 54px;
+  max-height: 54px;
+  padding: 0 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
   box-sizing: border-box;
 }
 .static-fallback .left-menu {
-  justify-self: start;
-  width: 48px; height: 48px;
-  border: 0; background: transparent;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
   color: var(--ink);
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
   cursor: pointer;
+  flex-shrink: 0;
 }
-.static-fallback .left-menu svg { width: 28px; height: 28px; }
-.static-fallback .centered-logo {
-  justify-self: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.static-fallback .left-menu svg { width: 26px; height: 26px; }
+.static-fallback .floating-logo {
+  position: absolute;
+  left: 50%;
+  top: 54px;
+  transform: translate(-50%, -42%);
+  z-index: 5;
   line-height: 0;
+  pointer-events: auto;
 }
-.static-fallback .brand-logo img,
-.static-fallback .centered-logo img {
+.static-fallback .floating-logo img,
+.static-fallback .brand-logo.floating-logo img {
   width: auto !important;
-  height: clamp(130px, 22vw, 200px) !important;
-  max-width: min(320px, 78vw) !important;
+  height: clamp(118px, 19vw, 168px) !important;
+  max-width: min(300px, 76vw) !important;
   object-fit: contain !important;
   border: none !important;
   border-radius: 0 !important;
@@ -83,10 +97,10 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   display: block;
 }
 .static-fallback .nav-actions {
-  justify-self: end;
   display: flex;
-  gap: 22px;
+  gap: 20px;
   align-items: center;
+  flex-shrink: 0;
 }
 .static-fallback .nav-actions a {
   position: relative;
@@ -105,7 +119,8 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 .static-fallback .shop-nav > nav {
   display: none;
   position: absolute;
-  left: 4%; top: calc(100% - 8px);
+  left: 4%;
+  top: calc(100% + 4px);
   width: min(320px, 88vw);
   padding: 18px;
   background: #fff;
@@ -616,11 +631,10 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 
 /* Tablet */
 @media (max-width: 900px) {
-  .static-fallback .shop-nav { min-height: 110px; padding: 8px 16px; }
-  .static-fallback .brand-logo img,
-  .static-fallback .centered-logo img {
-    height: clamp(110px, 24vw, 150px) !important;
-  }
+  .static-fallback .header-zone { padding-bottom: clamp(56px, 14vw, 76px); }
+  .static-fallback .shop-nav { height: 50px; min-height: 50px; max-height: 50px; padding: 0 14px; }
+  .static-fallback .floating-logo { top: 50px; transform: translate(-50%, -40%); }
+  .static-fallback .floating-logo img { height: clamp(108px, 26vw, 140px) !important; }
   .static-fallback .occasion-row {
     grid-template-columns: repeat(6, minmax(72px, 1fr));
     overflow-x: auto;
@@ -639,12 +653,10 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
     font-size: 11px;
   }
   .static-fallback .announcement span:first-child { display: none; }
-  .static-fallback .shop-nav { min-height: 100px; }
-  .static-fallback .brand-logo img,
-  .static-fallback .centered-logo img {
-    height: clamp(100px, 28vw, 130px) !important;
-    max-width: 85vw !important;
-  }
+  .static-fallback .header-zone { padding-bottom: 58px; }
+  .static-fallback .shop-nav { height: 48px; min-height: 48px; max-height: 48px; }
+  .static-fallback .floating-logo { top: 48px; transform: translate(-50%, -38%); }
+  .static-fallback .floating-logo img { height: clamp(100px, 28vw, 128px) !important; max-width: 82vw !important; }
   .static-fallback .nav-actions { gap: 16px; }
   .static-fallback .nav-actions svg { width: 24px; height: 24px; }
   .static-fallback .hero-cta-overlay {

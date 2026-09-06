@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { ArrowRight, Baby, BriefcaseBusiness, CalendarHeart, Check, ChevronLeft, ChevronRight, Ellipsis, Gem, Gift, GraduationCap, Grid2X2, Heart, Home, Menu, Minus, Plus, Search, ShoppingBag, Truck, Upload, User, X } from "lucide-react";
+import { ArrowRight, Baby, BriefcaseBusiness, CalendarHeart, Check, ChevronLeft, ChevronRight, Ellipsis, GraduationCap, Grid2X2, Heart, Home, Menu, Minus, Plus, Search, ShoppingBag, Truck, Upload, User, X } from "lucide-react";
 import type { Product, SiteSettings } from "@/lib/defaults";
 import { SEO_FAQ } from "@/lib/seo";
 
@@ -75,11 +75,24 @@ export default function Storefront({ initial }: Props) {
         <span><Heart size={15} fill="currentColor" /> {settings.announcement}</span>
       </div>
 
-      <header className="nav shop-nav">
-        <button className="menu left-menu" type="button" onClick={() => setMenu(!menu)} aria-label="Меню" aria-expanded={menu}>
-          {menu ? <X /> : <Menu />}
-        </button>
-        <a href="#top" className="brand-logo centered-logo">
+      <div className="header-zone">
+        <header className="nav shop-nav">
+          <button className="menu left-menu" type="button" onClick={() => setMenu(!menu)} aria-label="Меню" aria-expanded={menu}>
+            {menu ? <X /> : <Menu />}
+          </button>
+          <div className="nav-actions">
+            <a href="#products" aria-label="Търсене"><Search /></a>
+            <a href="#products" aria-label="Кошница" className="cart-icon"><ShoppingBag /><b>0</b></a>
+          </div>
+          <nav className={menu ? "open" : ""}>
+            <a href="#top" onClick={() => setMenu(false)}>Начало</a>
+            <a href="#products" onClick={() => setMenu(false)}>Бисквитки</a>
+            <a href="#how" onClick={() => setMenu(false)}>Как се поръчва</a>
+            <a href="#faq" onClick={() => setMenu(false)}>Въпроси</a>
+            <a href="#contact" onClick={() => setMenu(false)}>Контакти</a>
+          </nav>
+        </header>
+        <a href="#top" className="brand-logo floating-logo">
           <Image
             src="/sweet-details-logo.png"
             alt="Sweet Details — персонализирани бисквитки за всеки повод"
@@ -89,18 +102,7 @@ export default function Storefront({ initial }: Props) {
             priority
           />
         </a>
-        <div className="nav-actions">
-          <a href="#products" aria-label="Търсене"><Search /></a>
-          <a href="#products" aria-label="Кошница" className="cart-icon"><ShoppingBag /><b>0</b></a>
-        </div>
-        <nav className={menu ? "open" : ""}>
-          <a href="#top" onClick={() => setMenu(false)}>Начало</a>
-          <a href="#products" onClick={() => setMenu(false)}>Бисквитки</a>
-          <a href="#how" onClick={() => setMenu(false)}>Как се поръчва</a>
-          <a href="#faq" onClick={() => setMenu(false)}>Въпроси</a>
-          <a href="#contact" onClick={() => setMenu(false)}>Контакти</a>
-        </nav>
-      </header>
+      </div>
 
       <section id="top" className="hero">
         <div className="hero-banner-wrap">
