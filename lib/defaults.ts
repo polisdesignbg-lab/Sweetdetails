@@ -24,7 +24,7 @@ const commonOptions: ProductOption[] = [
 ];
 
 export const defaultProducts: Product[] = [
-  { id:"baptism", title:"Бисквитки за кръщене", category:"Кръщене", description:"Нежни маслени бисквитки с персонализиран фонданов печат за кръщене.", price:3.8, minQuantity:10, images:["/products-showcase.png"], options:commonOptions },
-  { id:"birthday", title:"Бисквитки за рожден ден", category:"Рожден ден", description:"Персонализирани бисквитки с тематичен дизайн за рожден ден.", price:3.8, minQuantity:10, images:["/products-showcase.png"], badge:"Най-любими", options:commonOptions },
-  { id:"wedding", title:"Бисквитки за сватба", category:"Сватба", description:"Елегантни бисквитки с фонданов печат за сватбени тържества.", price:4.4, minQuantity:10, images:["/products-showcase.png"], options:commonOptions },
+  { id:"baptism", title:"Бисквитки за кръщене", category:"Кръщене", description:"Нежни маслени бисквитки с персонализиран фонданов печат за кръщене.", price:1.95, minQuantity:10, images:["/products-showcase.png"], options:commonOptions },
+  { id:"birthday", title:"Бисквитки за рожден ден", category:"Рожден ден", description:"Персонализирани бисквитки с тематичен дизайн за рожден ден.", price:1.95, minQuantity:10, images:["/products-showcase.png"], badge:"Най-любими", options:commonOptions },
+  { id:"wedding", title:"Бисквитки за сватба", category:"Сватба", description:"Елегантни бисквитки с фонданов печат за сватбени тържества.", price:2.25, minQuantity:10, images:["/products-showcase.png"], options:commonOptions },
 ];

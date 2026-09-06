@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { ArrowRight, Baby, BriefcaseBusiness, CalendarHeart, Check, ChevronLeft, ChevronRight, Ellipsis, GraduationCap, Grid2X2, Heart, Home, Menu, Minus, Plus, Search, ShoppingBag, Truck, Upload, User, X } from "lucide-react";
+import { ArrowRight, Baby, BriefcaseBusiness, CalendarHeart, Check, ChevronLeft, ChevronRight, Ellipsis, GraduationCap, Grid2X2, Heart, Home, Menu, Minus, Phone, Plus, Search, ShoppingBag, Truck, Upload, X } from "lucide-react";
 import type { Product, SiteSettings } from "@/lib/defaults";
 import { SEO_FAQ } from "@/lib/seo";
+import { formatEuro, FREE_DELIVERY_EUR } from "@/lib/format";
 
 type Props = { initial: { settings: SiteSettings; products: Product[] } };
 
@@ -39,7 +40,7 @@ function ProductCard({ product, onOpen }: { product: Product; onOpen: () => void
       <div className="product-copy">
         <h3>{product.title}</h3>
         <div className="price-row">
-          <strong>{product.price.toFixed(2)} лв.</strong>
+          <strong>{formatEuro(product.price)}</strong>
           <button type="button" aria-label={`Поръчай ${product.title}`} onClick={onOpen}><Heart /></button>
         </div>
       </div>
@@ -71,38 +72,37 @@ export default function Storefront({ initial }: Props) {
       <h1 className="seo-h1">Персонализирани бисквити и сладки за всеки празник — Sweet Details</h1>
 
       <div className="announcement">
-        <span><Truck size={15} /> Безплатна доставка при поръчки над 80 лв.</span>
-        <span><Heart size={15} fill="currentColor" /> {settings.announcement}</span>
+        <span><Truck size={14} /> Безплатна доставка при поръчки над {FREE_DELIVERY_EUR} €</span>
+        <span><Heart size={14} fill="currentColor" /> {settings.announcement}</span>
       </div>
 
-      <div className="header-zone">
-        <header className="nav shop-nav">
-          <button className="menu left-menu" type="button" onClick={() => setMenu(!menu)} aria-label="Меню" aria-expanded={menu}>
-            {menu ? <X /> : <Menu />}
-          </button>
-          <div className="nav-actions">
-            <a href="#products" aria-label="Търсене"><Search /></a>
-            <a href="#products" aria-label="Кошница" className="cart-icon"><ShoppingBag /><b>0</b></a>
-          </div>
-          <nav className={menu ? "open" : ""}>
-            <a href="#top" onClick={() => setMenu(false)}>Начало</a>
-            <a href="#products" onClick={() => setMenu(false)}>Бисквитки</a>
-            <a href="#how" onClick={() => setMenu(false)}>Как се поръчва</a>
-            <a href="#faq" onClick={() => setMenu(false)}>Въпроси</a>
-            <a href="#contact" onClick={() => setMenu(false)}>Контакти</a>
-          </nav>
-        </header>
-        <a href="#top" className="brand-logo floating-logo">
+      <header className="header-zone shop-nav">
+        <button className="menu left-menu" type="button" onClick={() => setMenu(!menu)} aria-label="Меню" aria-expanded={menu}>
+          {menu ? <X size={26} strokeWidth={2} /> : <Menu size={26} strokeWidth={2} />}
+        </button>
+        <a href="#top" className="brand-logo">
           <Image
             src="/sweet-details-logo.png"
             alt="Sweet Details — персонализирани бисквитки за всеки повод"
-            width={320}
-            height={214}
+            width={240}
+            height={160}
             unoptimized
             priority
           />
         </a>
-      </div>
+        <div className="nav-actions">
+          <a href="#products" aria-label="Търсене"><Search size={26} strokeWidth={2} /></a>
+          <a href="#products" aria-label="Кошница" className="cart-icon"><ShoppingBag size={26} strokeWidth={2} /><b>0</b></a>
+        </div>
+        <nav className={menu ? "open" : ""}>
+          <a href="#top" onClick={() => setMenu(false)}>Начало</a>
+          <a href="#products" onClick={() => setMenu(false)}>Бисквитки</a>
+          <a href="#how" onClick={() => setMenu(false)}>Как се поръчва</a>
+          <a href="#faq" onClick={() => setMenu(false)}>Въпроси</a>
+          <a href="#contact" onClick={() => setMenu(false)}>Контакти</a>
+          <a href="/admin" onClick={() => setMenu(false)}>Админ панел</a>
+        </nav>
+      </header>
 
       <section id="top" className="hero">
         <div className="hero-banner-wrap">
@@ -121,12 +121,19 @@ export default function Storefront({ initial }: Props) {
       </section>
 
       <section className="occasion-row" aria-label="Категории">
-        {[["Кръщене", Baby], ["Рожден ден", CalendarHeart], ["Сватба", Heart], ["Завършване", GraduationCap], ["Фирмени", BriefcaseBusiness], ["Други", Ellipsis]].map(([c, I]) => {
-          const Icon = I as typeof Baby;
+        {([
+          ["Кръщене", Baby, "baptism"],
+          ["Рожден ден", CalendarHeart, "birthday"],
+          ["Сватба", Heart, "wedding"],
+          ["Завършване", GraduationCap, "graduation"],
+          ["Фирмени", BriefcaseBusiness, "corporate"],
+          ["Други", Ellipsis, "other"],
+        ] as const).map(([c, I, slug]) => {
+          const Icon = I;
           return (
-            <button key={c as string} type="button" onClick={() => scrollToProducts(c as string)}>
-              <span><Icon /></span>
-              <strong>{c === "Фирмени" ? "Фирмени събития" : (c as string)}</strong>
+            <button key={c} type="button" className={`cat-${slug}`} onClick={() => scrollToProducts(c === "Фирмени" ? "Фирмени" : c)}>
+              <span><Icon strokeWidth={2.25} /></span>
+              <strong>{c === "Фирмени" ? "Фирмени събития" : c}</strong>
             </button>
           );
         })}
@@ -153,9 +160,36 @@ export default function Storefront({ initial }: Props) {
       <section id="how" className="steps-compact">
         <h2>Как се поръчва?</h2>
         <div className="steps-grid">
-          <div className="step-card"><span>1</span><h3>Избери бисквитки</h3><p>Посочи продукт, количество и повод.</p></div>
-          <div className="step-card"><span>2</span><h3>Разкажи идеята</h3><p>Добави текст, цветове и примерна снимка.</p></div>
-          <div className="step-card"><span>3</span><h3>Потвърди и плати</h3><p>Онлайн плащане и започваме изработката.</p></div>
+          <div className="step-card"><span>1</span><h3>Избери бисквитки</h3><p>Избери продукт и количество — минимум 10 бр.</p></div>
+          <div className="step-card"><span>2</span><h3>Опиши желанието</h3><p>Добави повод, текст и примерна снимка, ако имаш.</p></div>
+          <div className="step-card"><span>3</span><h3>Изпрати поръчката</h3><p>Само име, имейл и телефон — без регистрация. Ще се свържем с теб.</p></div>
+        </div>
+      </section>
+
+      <section id="about" className="about-section">
+        <div className="about-inner">
+          <div className="about-copy">
+            <span className="section-label">За Sweet Details</span>
+            <h2>Ръчно изработени бисквитки с лично послание</h2>
+            <p>{settings.about}</p>
+          </div>
+          <div className="info-cards">
+            <article className="info-card">
+              <Truck size={26} strokeWidth={2} />
+              <strong>Безплатна доставка</strong>
+              <p>При поръчки над {FREE_DELIVERY_EUR} € по цяла България.</p>
+            </article>
+            <article className="info-card">
+              <CalendarHeart size={26} strokeWidth={2} />
+              <strong>Срок за поръчка</strong>
+              <p>{settings.leadDays}.</p>
+            </article>
+            <article className="info-card">
+              <Heart size={26} strokeWidth={2} />
+              <strong>Минимална поръчка</strong>
+              <p>10 броя — персонализирани за твоя повод.</p>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -171,21 +205,44 @@ export default function Storefront({ initial }: Props) {
         </div>
       </section>
 
-      <footer id="contact">
-        <Image className="footer-logo-image" src="/sweet-details-logo.png" alt="Sweet Details" width={260} height={174} unoptimized />
-        <p>Персонализирани бисквитки за всеки повод.</p>
-        <div className="contact-lines">
-          {settings.email && <a href={`mailto:${settings.email}`}>{settings.email}</a>}
-          {settings.phone && <a href={`tel:${settings.phone}`}>{settings.phone}</a>}
+      <footer id="contact" className="site-footer">
+        <div className="footer-inner">
+          <div className="footer-main">
+            <div className="footer-brand">
+              <Image className="footer-logo-image" src="/sweet-details-logo.png" alt="Sweet Details" width={140} height={56} unoptimized />
+              <p>{settings.intro}</p>
+            </div>
+            <div className="footer-columns">
+              <div className="footer-col">
+                <h3>Контакти</h3>
+                {settings.email && <a href={`mailto:${settings.email}`}>{settings.email}</a>}
+                {settings.phone && <a href={`tel:${settings.phone}`}>{settings.phone}</a>}
+              </div>
+              <div className="footer-col">
+                <h3>Навигация</h3>
+                <a href="#products">Бисквитки</a>
+                <a href="#how">Как се поръчва</a>
+                <a href="#about">За нас</a>
+                <a href="#faq">Въпроси</a>
+                <a href="/admin">Админ панел</a>
+              </div>
+            </div>
+          </div>
+          <div className="footer-meta">
+            <small>© {new Date().getFullYear()} {settings.brand}</small>
+            <span className="footer-meta-sep">·</span>
+            <span className="footer-credit-inline">
+              Направено от <a href="https://polisdesign.bg" target="_blank" rel="noopener noreferrer">Poli&apos;s Design</a>
+            </span>
+          </div>
         </div>
-        <small>© {new Date().getFullYear()} {settings.brand}. Всички права запазени.</small>
       </footer>
 
       <nav className="mobile-bottom" aria-label="Мобилна навигация">
-        <a href="#top" className="bottom-active"><Home />Начало</a>
-        <a href="#products"><Grid2X2 />Категории</a>
-        <a href="#products"><Heart />Любими</a>
-        <a href="#contact"><User />Контакти</a>
+        <a href="#top" className="bottom-active"><Home size={22} strokeWidth={2} />Начало</a>
+        <a href="#products"><Grid2X2 size={22} strokeWidth={2} />Бисквитки</a>
+        <a href="#how"><ShoppingBag size={22} strokeWidth={2} />Поръчка</a>
+        <a href="#contact"><Phone size={22} strokeWidth={2} />Контакти</a>
       </nav>
 
       {selected && <OrderModal product={selected} onClose={() => setSelected(null)} />}
@@ -198,7 +255,7 @@ function OrderModal({ product, onClose }: { product: Product; onClose: () => voi
   const [quantity, setQuantity] = useState(minimum);
   const [values, setValues] = useState<Record<string, string | boolean>>({});
   const [file, setFile] = useState<File | null>(null);
-  const [contact, setContact] = useState({ name: "", email: "", phone: "", date: "" });
+  const [contact, setContact] = useState({ name: "", email: "", phone: "" });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const total = useMemo(() => {
@@ -230,7 +287,7 @@ function OrderModal({ product, onClose }: { product: Product; onClose: () => voi
       });
       const data = await r.json();
       if (data.url) location.href = data.url;
-      else setMessage(data.message || "Поръчката е приета.");
+      else setMessage(data.message || "Поръчката е приета. Ще се свържем с теб скоро.");
     } catch {
       setMessage("Не успяхме да изпратим поръчката. Опитай отново.");
     } finally {
@@ -245,7 +302,7 @@ function OrderModal({ product, onClose }: { product: Product; onClose: () => voi
         <div className="modal-head">
           <span className="section-label">Твоята поръчка</span>
           <h2>{product.title}</h2>
-          <p>Попълни детайлите — ще ги видиш обобщени преди плащане.</p>
+          <p>Опиши детайлите и остави контакт — ще се свържем с теб за потвърждение.</p>
         </div>
         <form onSubmit={submit}>
           <div className="qty">
@@ -287,16 +344,17 @@ function OrderModal({ product, onClose }: { product: Product; onClose: () => voi
             <span><strong>{file ? file.name : "Прикачи примерен дизайн"}</strong></span>
             <input type="file" accept="image/png,image/jpeg,image/webp" onChange={e => setFile(e.target.files?.[0] || null)} />
           </label>
-          <div className="contact-grid">
-            <label className="field">Име<input required value={contact.name} onChange={e => setContact({ ...contact, name: e.target.value })} /></label>
-            <label className="field">Телефон<input required value={contact.phone} onChange={e => setContact({ ...contact, phone: e.target.value })} /></label>
-            <label className="field">Имейл<input type="email" required value={contact.email} onChange={e => setContact({ ...contact, email: e.target.value })} /></label>
-            <label className="field">Желана дата<input type="date" required value={contact.date} onChange={e => setContact({ ...contact, date: e.target.value })} /></label>
+          <div className="contact-fields">
+            <h3>Данни за връзка</h3>
+            <p className="contact-hint">Без регистрация — нужни са само име, имейл и телефон.</p>
+            <label className="field">Име<input required autoComplete="name" value={contact.name} onChange={e => setContact({ ...contact, name: e.target.value })} /></label>
+            <label className="field">Имейл<input type="email" required autoComplete="email" value={contact.email} onChange={e => setContact({ ...contact, email: e.target.value })} /></label>
+            <label className="field">Телефон<input type="tel" required autoComplete="tel" value={contact.phone} onChange={e => setContact({ ...contact, phone: e.target.value })} /></label>
           </div>
           {message && <div className="form-message">{message}</div>}
           <div className="checkout">
-            <div><small>Общо</small><strong>{total.toFixed(2)} лв.</strong></div>
-            <button disabled={busy} type="submit">{busy ? "Обработваме…" : "Към плащане"}<ArrowRight /></button>
+            <div><small>Ориентировъчно</small><strong>{formatEuro(total)}</strong></div>
+            <button disabled={busy} type="submit">{busy ? "Изпращаме…" : "Изпрати поръчка"}<ArrowRight /></button>
           </div>
         </form>
       </div>

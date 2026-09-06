@@ -56,7 +56,7 @@ export const SEO_FAQ = [
   {
     question: "Предлагате ли доставка?",
     answer:
-      "Да. Безплатна доставка при поръчки над 80 лв. Бисквитките се опаковат нежно и могат да бъдат готови за подарък.",
+      "Да. Безплатна доставка при поръчки над 41 €. Бисквитките се опаковат нежно и могат да бъдат готови за подарък.",
   },
   {
     question: "За какви празници са подходящи вашите бисквитки?",
@@ -108,7 +108,7 @@ export function buildStructuredData(settings: SiteSettings, products: Product[])
     email: settings.email,
     ...(settings.phone ? { telephone: settings.phone } : {}),
     priceRange: "$$",
-    currenciesAccepted: "BGN",
+    currenciesAccepted: "EUR",
     paymentAccepted: "Credit Card",
     servesCuisine: "Bulgarian",
     areaServed: { "@type": "Country", name: "Bulgaria" },
@@ -128,7 +128,7 @@ export function buildStructuredData(settings: SiteSettings, products: Product[])
           brand: { "@type": "Brand", name: SITE_NAME },
           offers: {
             "@type": "Offer",
-            priceCurrency: "BGN",
+            priceCurrency: "EUR",
             price: product.price,
             availability: "https://schema.org/InStock",
             url: `${SITE_URL}/#products`,
