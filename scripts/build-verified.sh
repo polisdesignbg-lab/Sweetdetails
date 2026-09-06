@@ -24,3 +24,7 @@ timeout \
   --kill-after="${SITES_BUILD_KILL_AFTER:-10s}" \
   "${SITES_BUILD_TIMEOUT:-3m}" \
   "${vinext}" build
+
+# The storefront has a static fallback so it stays available even if the
+# application runtime or database is temporarily unavailable.
+cp "${SITES_PROJECT_ROOT}/app/globals.css" "${SITES_PROJECT_ROOT}/dist/client/site.css"
