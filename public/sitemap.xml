@@ -16,4 +16,10 @@
       <image:title>Sweet Details лого</image:title>
     </image:image>
   </url>
+  <url>
+    <loc>https://sweetdetails.ink/products</loc>
+    <lastmod>2026-09-06T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
 </urlset>

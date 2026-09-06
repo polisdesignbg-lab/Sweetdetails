@@ -342,7 +342,8 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 }
 .static-fallback .favorites-title h2 svg { width: 26px; height: 26px; }
 .static-fallback .favorites-title > button,
-.static-fallback .favorites-title > .view-all-link {
+.static-fallback .favorites-title > .view-all-link,
+.static-fallback .favorites-title > a {
   position: relative; z-index: 1;
   border: 0; background: transparent;
   display: flex; align-items: center; gap: 4px;
@@ -352,7 +353,8 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   text-decoration: none;
 }
 .static-fallback .favorites-title > button svg,
-.static-fallback .favorites-title > .view-all-link svg { width: 14px; height: 14px; }
+.static-fallback .favorites-title > .view-all-link svg,
+.static-fallback .favorites-title > a svg { width: 14px; height: 14px; }
 .static-fallback .filters {
   display: none;
   gap: 8px;
