@@ -1,10 +1,13 @@
 import { env } from "cloudflare:workers";
-import { defaultProducts, defaultSettings, type Product, type SiteSettings } from "./defaults";
+import { defaultProducts, defaultSettings, defaultShapesByProductId, type Product, type SiteSettings } from "./defaults";
 
 function normalizeProduct(raw: Product): Product {
+  const shapes = Array.isArray(raw.shapes) && raw.shapes.length
+    ? raw.shapes
+    : (defaultShapesByProductId[raw.id] ?? []);
   return {
     ...raw,
-    shapes: Array.isArray(raw.shapes) ? raw.shapes : [],
+    shapes,
     images: Array.isArray(raw.images) ? raw.images : [],
     options: Array.isArray(raw.options) ? raw.options : [],
   };

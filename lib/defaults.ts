@@ -46,8 +46,35 @@ const commonOptions: ProductOption[] = [
 
 export const PACKAGING_NOTE = "Ако не е избрана панделка, бисквитките ще бъдат опаковани в целофанче.";
 
-export const defaultProducts: Product[] = [
-  { id: "baptism", title: "Бисквитки за кръщене", category: "Кръщене", description: "Нежни маслени бисквитки с персонализиран фонданов печат за кръщене.", price: 1.95, minQuantity: 10, images: ["/products-showcase.png"], shapes: [], options: commonOptions },
-  { id: "birthday", title: "Бисквитки за рожден ден", category: "Рожден ден", description: "Персонализирани бисквитки с тематичен дизайн за рожден ден.", price: 1.95, minQuantity: 10, images: ["/products-showcase.png"], badge: "Най-любими", shapes: [], options: commonOptions },
-  { id: "wedding", title: "Бисквитки за сватба", category: "Сватба", description: "Елегантни бисквитки с фонданов печат за сватбени тържества.", price: 2.25, minQuantity: 10, images: ["/products-showcase.png"], shapes: [], options: commonOptions },
+const baptismShapes: ProductShape[] = [
+  { id: "baptism-circle", label: "Кръг", image: "/shapes/circle.svg" },
+  { id: "baptism-heart", label: "Сърце", image: "/shapes/heart.svg" },
+  { id: "baptism-cross", label: "Кръст", image: "/shapes/cross.svg" },
+  { id: "baptism-onesie", label: "Боди", image: "/shapes/onesie.svg" },
 ];
+
+const birthdayShapes: ProductShape[] = [
+  { id: "birthday-circle", label: "Кръг", image: "/shapes/circle.svg" },
+  { id: "birthday-heart", label: "Сърце", image: "/shapes/heart.svg" },
+  { id: "birthday-star", label: "Звезда", image: "/shapes/star.svg" },
+  { id: "birthday-number", label: "Цифра", image: "/shapes/number.svg" },
+];
+
+const weddingShapes: ProductShape[] = [
+  { id: "wedding-circle", label: "Кръг", image: "/shapes/circle.svg" },
+  { id: "wedding-heart", label: "Сърце", image: "/shapes/heart.svg" },
+  { id: "wedding-oval", label: "Овал", image: "/shapes/oval.svg" },
+  { id: "wedding-flower", label: "Цвете", image: "/shapes/flower.svg" },
+];
+
+export const defaultProducts: Product[] = [
+  { id: "baptism", title: "Бисквитки за кръщене", category: "Кръщене", description: "Нежни маслени бисквитки с персонализиран фонданов печат за кръщене.", price: 1.95, minQuantity: 10, images: ["/products-showcase.png"], shapes: baptismShapes, options: commonOptions },
+  { id: "birthday", title: "Бисквитки за рожден ден", category: "Рожден ден", description: "Персонализирани бисквитки с тематичен дизайн за рожден ден.", price: 1.95, minQuantity: 10, images: ["/products-showcase.png"], badge: "Най-любими", shapes: birthdayShapes, options: commonOptions },
+  { id: "wedding", title: "Бисквитки за сватба", category: "Сватба", description: "Елегантни бисквитки с фонданов печат за сватбени тържества.", price: 2.25, minQuantity: 10, images: ["/products-showcase.png"], shapes: weddingShapes, options: commonOptions },
+];
+
+export const defaultShapesByProductId: Record<string, ProductShape[]> = {
+  baptism: baptismShapes,
+  birthday: birthdayShapes,
+  wedding: weddingShapes,
+};
