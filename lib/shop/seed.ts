@@ -123,4 +123,4 @@ export const SHOP_SETTINGS_KEY = "shop_settings";
 
 export type ShopSettings = { minLeadDays: number; catalogVersion?: number };
 
-export const defaultShopSettings: ShopSettings = { minLeadDays: 14, catalogVersion: 4 };
+export const defaultShopSettings: ShopSettings = { minLeadDays: 14, catalogVersion: 5 };

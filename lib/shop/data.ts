@@ -34,12 +34,13 @@ function parseShopProduct(raw: string): ShopProduct | null {
 async function getShopSettings(): Promise<ShopSettings> {
   try {
     const row = await env.DB.prepare("SELECT data FROM settings WHERE id = 1").first<{ data: string }>();
-    if (!row) return defaultShopSettings;
+    if (!row) return { ...defaultShopSettings, catalogVersion: 0 };
     const data = parse<Record<string, unknown>>(row.data);
     const shop = data[SHOP_SETTINGS_KEY] as ShopSettings | undefined;
-    return shop ?? defaultShopSettings;
+    if (!shop) return { ...defaultShopSettings, catalogVersion: 0 };
+    return { ...defaultShopSettings, ...shop };
   } catch {
-    return defaultShopSettings;
+    return { ...defaultShopSettings, catalogVersion: 0 };
   }
 }
 
@@ -56,27 +57,28 @@ async function migrateShopDefaults() {
   try {
     const settings = await getShopSettings();
     const version = settings.catalogVersion ?? 0;
-    if (version >= 4) return;
+    if (version >= 5) return;
 
     const productRows = await env.DB.prepare("SELECT id, data FROM products").all<{ id: string; data: string }>();
     const shapeRows = await env.DB.prepare("SELECT id, data FROM shapes").all<{ id: string; data: string }>();
-    const batch = [
-      ...productRows.results.map(row => {
-        const p = parseShopProduct(row.data);
-        if (!p) return null;
-        p.pricePerUnit = 2;
-        p.priceTiers = [];
-        p.packagingInfo = SHOP_PACKAGING_INFO;
-        return env.DB.prepare("UPDATE products SET data = ? WHERE id = ?").bind(JSON.stringify(p), row.id);
-      }).filter(Boolean) as ReturnType<typeof env.DB.prepare>[],
-      ...shapeRows.results.map(row => {
-        const s = parse<ShopShape>(row.data);
-        s.addonPrice = 0;
-        return env.DB.prepare("UPDATE shapes SET data = ? WHERE id = ?").bind(JSON.stringify(s), row.id);
-      }),
-    ];
-    if (batch.length) await env.DB.batch(batch);
-    await saveShopSettings({ ...settings, minLeadDays: 14, catalogVersion: 4 });
+    const statements: ReturnType<typeof env.DB.prepare>[] = [];
+
+    for (const row of productRows.results) {
+      const p = parseShopProduct(row.data);
+      if (!p) continue;
+      p.pricePerUnit = 2;
+      p.priceTiers = [];
+      p.packagingInfo = SHOP_PACKAGING_INFO;
+      statements.push(env.DB.prepare("UPDATE products SET data = ? WHERE id = ?").bind(JSON.stringify(p), row.id));
+    }
+    for (const row of shapeRows.results) {
+      const s = parse<ShopShape>(row.data);
+      s.addonPrice = 0;
+      statements.push(env.DB.prepare("UPDATE shapes SET data = ? WHERE id = ?").bind(JSON.stringify(s), row.id));
+    }
+
+    if (statements.length) await env.DB.batch(statements);
+    await saveShopSettings({ minLeadDays: 14, catalogVersion: 5 });
   } catch (err) {
     console.error("[shop] migrateShopDefaults failed:", err);
   }
