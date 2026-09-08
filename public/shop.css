@@ -1000,7 +1000,7 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
     justify-content: center;
     font-size: 11px;
   }
-  .static-fallback .announcement span:first-child { display: none; }
+  .static-fallback .announcement .announcement-secondary { display: none; }
   .static-fallback .occasion-row {
     display: flex;
     gap: 14px;

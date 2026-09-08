@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Grid2X2, Heart, Home, Menu, Phone, Search, Truck, X } from "lucide-react";
+import { CalendarClock, Grid2X2, Home, Menu, Phone, Search, Truck, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/defaults";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
 
@@ -17,8 +17,8 @@ export function ShopChrome({ settings, activeNav = "home" }: Props) {
   return (
     <>
       <div className="announcement">
-        <span><Truck size={14} /> Безплатна доставка при поръчки над {FREE_DELIVERY_EUR} €</span>
-        <span><Heart size={14} fill="currentColor" /> {settings.announcement}</span>
+        <span><CalendarClock size={14} /> Поръчки се приемат 2–3 седмици предварително</span>
+        <span className="announcement-secondary"><Truck size={14} /> Безплатна доставка при поръчки над {FREE_DELIVERY_EUR} €</span>
       </div>
 
       <header className="header-zone shop-nav">
