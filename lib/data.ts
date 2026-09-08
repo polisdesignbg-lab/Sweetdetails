@@ -95,21 +95,15 @@ export async function getContent(): Promise<{ settings: SiteSettings; products: 
   }
 }
 
-export async function saveContent(settings: SiteSettings, products: Product[]) {
+export async function saveContent(settings: SiteSettings, _products: Product[]) {
   const existing = await env.DB.prepare("SELECT data FROM settings WHERE id = 1").first<{ data: string }>();
   const data = existing ? (JSON.parse(existing.data) as Record<string, unknown>) : {};
+  // Merge site settings only — never wipe shop catalog in `products` table.
+  // Homepage "favorites" are derived from the shop catalog via getContent().
+  const shopSettings = data.shop_settings;
   Object.assign(data, settings);
+  if (shopSettings) data.shop_settings = shopSettings;
   await env.DB.prepare("INSERT INTO settings (id,data) VALUES (1,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data")
     .bind(JSON.stringify(data))
     .run();
-  // Do not wipe shop catalog products from homepage admin save.
-  // Homepage favorites use normalized shop/legacy products from the same table.
-  const statements = [
-    env.DB.prepare("DELETE FROM products"),
-    ...products.map((p, i) =>
-      env.DB.prepare("INSERT INTO products (id, slug, data, position, active) VALUES (?, ?, ?, ?, ?)")
-        .bind(p.id, p.id, JSON.stringify(p), i, 1),
-    ),
-  ];
-  await env.DB.batch(statements);
 }
