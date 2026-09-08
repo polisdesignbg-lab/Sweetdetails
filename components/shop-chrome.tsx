@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { CalendarClock, Menu, ShoppingCart, Truck, X } from "lucide-react";
+import { CalendarClock, Facebook, Instagram, Menu, ShoppingCart, Truck, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/defaults";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
 import { useCart } from "@/components/shop/cart-context";
@@ -49,7 +49,18 @@ export function ShopChrome({ settings }: Props) {
   );
 }
 
+function socialHref(url: string) {
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export function ShopFooter({ settings }: { settings: SiteSettings }) {
+  const email = (settings.email || "").trim();
+  const ig = socialHref(settings.instagram || "");
+  const fb = socialHref(settings.facebook || "");
+
   return (
     <footer id="contact" className="site-footer">
       <div className="footer-inner">
@@ -61,8 +72,32 @@ export function ShopFooter({ settings }: { settings: SiteSettings }) {
           <div className="footer-columns">
             <div className="footer-col">
               <h3>Контакти</h3>
-              {settings.email && <a href={`mailto:${settings.email}`}>{settings.email}</a>}
+              {email ? (
+                <a href={`mailto:${email}`}>{email}</a>
+              ) : (
+                <a href="mailto:sweetdetails.bg@gmail.com">sweetdetails.bg@gmail.com</a>
+              )}
               {settings.phone && <a href={`tel:${settings.phone}`}>{settings.phone}</a>}
+              <div className="footer-socials">
+                {fb ? (
+                  <a href={fb} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="footer-social-link">
+                    <Facebook size={20} strokeWidth={2} />
+                  </a>
+                ) : (
+                  <span className="footer-social-link footer-social-link-muted" title="Добави Facebook линк от админ → Настройки" aria-label="Facebook">
+                    <Facebook size={20} strokeWidth={2} />
+                  </span>
+                )}
+                {ig ? (
+                  <a href={ig} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="footer-social-link">
+                    <Instagram size={20} strokeWidth={2} />
+                  </a>
+                ) : (
+                  <span className="footer-social-link footer-social-link-muted" title="Добави Instagram линк от админ → Настройки" aria-label="Instagram">
+                    <Instagram size={20} strokeWidth={2} />
+                  </span>
+                )}
+              </div>
             </div>
             <div className="footer-col">
               <h3>Навигация</h3>

@@ -296,11 +296,11 @@ export default function AdminPanel({ authorized, initial }: Props) {
   );
 }
 
-function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
+function Field({ label, value, onChange, type = "text", placeholder }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string }) {
   return (
     <label className="admin-field">
       {label}
-      <input type={type} value={value} onChange={e => onChange(e.target.value)} />
+      <input type={type} value={value} placeholder={placeholder} onChange={e => onChange(e.target.value)} />
     </label>
   );
 }
@@ -523,8 +523,8 @@ function SettingsEditor({ value, update }: { value: SiteSettings; update: (v: Si
           </label>
           <Field label="Телефон" value={value.phone} onChange={v => p("phone", v)} />
           <Field label="Имейл" value={value.email} onChange={v => p("email", v)} />
-          <Field label="Instagram" value={value.instagram} onChange={v => p("instagram", v)} />
-          <Field label="Facebook" value={value.facebook} onChange={v => p("facebook", v)} />
+          <Field label="Instagram линк" value={value.instagram} onChange={v => p("instagram", v)} placeholder="https://instagram.com/..." />
+          <Field label="Facebook линк" value={value.facebook} onChange={v => p("facebook", v)} placeholder="https://facebook.com/..." />
           <label className="admin-field wide">
             Категории <small style={{ fontWeight: 400 }}>(разделени със запетая)</small>
             <input

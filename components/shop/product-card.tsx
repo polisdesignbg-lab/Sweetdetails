@@ -35,6 +35,26 @@ export function ShopProductCard({ product, categorySlug }: { product: ShopProduc
   );
 }
 
+/** Compact featured card: large image + category label only (for horizontal scroll). */
+export function FeaturedSnapCard({ product, categorySlug }: { product: ShopProduct; categorySlug?: string }) {
+  const { categories } = useCatalog();
+  const cat = categories.find(c => c.id === product.categoryId);
+  const slug = categorySlug || cat?.slug || "shop";
+  const href = `/shop/${slug}/${product.slug}`;
+  const img = product.images[0] || "/products-showcase.png";
+
+  return (
+    <article className="featured-snap-card">
+      <a href={href}>
+        <div className="featured-snap-card-image">
+          <Image src={img} alt={product.title} fill unoptimized sizes="(max-width:700px) 70vw, 40vw" style={{ objectFit: "cover" }} />
+        </div>
+        <span className="featured-snap-card-cat">{cat?.name || product.title}</span>
+      </a>
+    </article>
+  );
+}
+
 export function CategoryCard({ slug, name, description, image }: { slug: string; name: string; description: string; image: string }) {
   return (
     <a href={`/shop/${slug}`} className="shop-category-card">

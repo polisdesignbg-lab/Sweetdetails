@@ -9,7 +9,7 @@ import { SEO_FAQ } from "@/lib/seo";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
 import { ShopChrome, ShopFooter } from "@/components/shop-chrome";
 import { CatalogProvider, useCatalog } from "@/components/shop/catalog-context";
-import { ShopProductCard } from "@/components/shop/product-card";
+import { FeaturedSnapCard } from "@/components/shop/product-card";
 
 type Props = { initial: { settings: SiteSettings } };
 
@@ -31,9 +31,9 @@ function HomeFavorites() {
   }
 
   return (
-    <div className="grid home-featured-grid">
+    <div className="shop-featured-row home-featured-row">
       {featured.map(p => (
-        <ShopProductCard key={p.id} product={p} />
+        <FeaturedSnapCard key={p.id} product={p} />
       ))}
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCatalog } from "./catalog-context";
-import { CategoryCard, ShopProductCard } from "./product-card";
+import { CategoryCard, FeaturedSnapCard, ShopProductCard } from "./product-card";
 import { ShopChrome, ShopFooter } from "@/components/shop-chrome";
 import { defaultSettings } from "@/lib/defaults";
 import { useEffect, useState } from "react";
@@ -45,7 +45,7 @@ export function ShopHomeView() {
           <h2>Най-поръчвани</h2>
           <div className="shop-featured-row">
             {featured.map(p => (
-              <ShopProductCard key={p.id} product={p} />
+              <FeaturedSnapCard key={p.id} product={p} />
             ))}
           </div>
         </section>
