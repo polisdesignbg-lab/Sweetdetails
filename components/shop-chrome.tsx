@@ -28,7 +28,7 @@ export function ShopChrome({ settings, activeNav = "home" }: Props) {
           {menu ? <X size={26} strokeWidth={2} /> : <Menu size={26} strokeWidth={2} />}
         </button>
         <a href="/" className="brand-logo">
-          <Image src="/sweet-details-logo.png" alt="Sweet Details" width={320} height={214} unoptimized priority />
+          <Image src="/sweet-details-logo.png" alt="Sweet Details" width={200} height={64} unoptimized priority />
         </a>
         <div className="nav-actions">
           <a href="/shop/cart" className="nav-cart" aria-label={`Количка${count ? `, ${count} продукта` : ""}`}>
