@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ArrowRight, Minus, Plus, Upload } from "lucide-react";
 import type { OrderCustomization, OrderContact, ShopProduct, ShopShape } from "@/lib/shop/types";
@@ -31,9 +31,12 @@ export function ShopOrderForm({ product, categorySlug, shapes: shapeProp }: Prop
   const [error, setError] = useState("");
 
   const selectedShape = shapes.find(s => s.id === shapeId);
-  const shapeAddon = (selectedShape?.addonPrice ?? 0) * quantity;
   const unitPrice = getUnitPrice(product, quantity);
-  const total = calculateTotal(product, quantity, shapeAddon);
+  const total = calculateTotal(product, quantity, 0);
+
+  useEffect(() => {
+    if (shapes.length && !shapeId) setShapeId(shapes[0].id);
+  }, [shapes, shapeId]);
 
   const patch = (k: keyof OrderCustomization, v: string) => setCustomization({ ...customization, [k]: v });
 
@@ -156,9 +159,8 @@ export function ShopOrderForm({ product, categorySlug, shapes: shapeProp }: Prop
           <div className="shape-grid">
             {shapes.map(s => (
               <button key={s.id} type="button" className={`shape-option${shapeId === s.id ? " active" : ""}`} onClick={() => setShapeId(s.id)}>
-                <span className="shape-thumb"><img src={s.image} alt={s.label} /></span>
+                <span className="shape-thumb"><img src={s.image} alt={s.label} draggable={false} /></span>
                 <strong>{s.label}</strong>
-                {s.addonPrice > 0 && <small>+{formatEuro(s.addonPrice)}/бр.</small>}
               </button>
             ))}
           </div>

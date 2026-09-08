@@ -728,7 +728,7 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   left: 0; right: 0; bottom: 0;
   height: var(--bottom-nav-h);
   background: rgba(255, 255, 255, 0.98);
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid #f2c9d8;
   box-shadow: 0 -4px 20px rgba(72, 25, 42, 0.06);
 }
@@ -1136,10 +1136,24 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 }
 
 .shop-category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  display: flex;
   gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
   margin-bottom: 20px;
+  scrollbar-width: none;
+}
+
+.shop-category-grid::-webkit-scrollbar { display: none; }
+
+@media (min-width: 701px) {
+  .shop-category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    overflow: visible;
+    scroll-snap-type: none;
+  }
 }
 
 .shop-category-card {
@@ -1154,6 +1168,12 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   text-decoration: none;
   color: inherit;
   transition: box-shadow 0.2s, transform 0.2s;
+  flex: 0 0 132px;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 701px) {
+  .shop-category-card { flex: auto; }
 }
 
 .shop-category-card:hover {
@@ -1212,8 +1232,21 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 
 .shop-product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 600px) {
+  .shop-product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (min-width: 900px) {
+  .shop-product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
 }
 
 .shop-product-card {
@@ -1457,6 +1490,8 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 .shape-thumb img {
   max-width: 100%;
   max-height: 100%;
+  pointer-events: none;
+  user-select: none;
 }
 
 .shop-fields {
@@ -1631,9 +1666,19 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   margin: 12px 0;
 }
 
+.shop-related {
+  margin-top: 32px;
+}
+
+.shop-related h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.2rem;
+  margin-bottom: 14px;
+  color: #3d2a32;
+}
+
 @media (max-width: 600px) {
   .shop-fields { grid-template-columns: 1fr; }
-  .shop-category-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 701px) {

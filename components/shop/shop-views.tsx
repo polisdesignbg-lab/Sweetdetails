@@ -8,7 +8,6 @@ import { ShopChrome, ShopFooter } from "@/components/shop-chrome";
 import { defaultSettings } from "@/lib/defaults";
 import type { SiteSettings } from "@/lib/defaults";
 import type { ShopProduct } from "@/lib/shop/types";
-import { formatPriceTiers, getUnitPrice } from "@/lib/shop/pricing";
 import { formatEuro } from "@/lib/format";
 import { ShopHomeView } from "./shop-home-view";
 
@@ -53,6 +52,8 @@ export function ProductView({ categorySlug, productSlug }: { categorySlug: strin
 
   if (!product) return <CategoryView slug={categorySlug} />;
 
+  const related = catalog.products.filter(p => p.categoryId === product.categoryId && p.id !== product.id && p.active && !p.isCustomDesign);
+
   return (
     <main className="static-fallback shop-page" style={{ "--brand": settings.primaryColor } as React.CSSProperties}>
       <ShopChrome settings={settings} activeNav="shop" />
@@ -64,8 +65,7 @@ export function ProductView({ categorySlug, productSlug }: { categorySlug: strin
             <span className="shop-product-cat">{cat?.name}</span>
             <h1>{product.title}</h1>
             <p className="shop-product-lead">{product.shortDescription}</p>
-            <p className="shop-price-from">от {formatEuro(getUnitPrice(product, product.minQuantity))} / бр.</p>
-            {!!product.priceTiers.length && <p className="shop-tier-hint">{formatPriceTiers(product.priceTiers)}</p>}
+            <p className="shop-price-from">{formatEuro(product.pricePerUnit)} / бр.</p>
             <div className="shop-info-blocks">
               {product.sizeInfo && <div><strong>Размер</strong><p>{product.sizeInfo}</p></div>}
               {product.packagingInfo && <div><strong>Опаковка</strong><p>{product.packagingInfo}</p></div>}
@@ -75,6 +75,12 @@ export function ProductView({ categorySlug, productSlug }: { categorySlug: strin
           </div>
         </div>
         <ShopOrderForm product={product} categorySlug={categorySlug} />
+        {!!related.length && (
+          <section className="shop-related">
+            <h2>Още от {cat?.name}</h2>
+            <div className="shop-product-grid">{related.map(p => <ShopProductCard key={p.id} product={p} categorySlug={categorySlug} />)}</div>
+          </section>
+        )}
       </section>
       <ShopFooter settings={settings} />
     </main>

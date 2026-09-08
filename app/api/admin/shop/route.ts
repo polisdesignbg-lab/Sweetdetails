@@ -1,10 +1,10 @@
 import { isAdminRequest } from "@/lib/admin-auth";
 import {
+  ensureShopMigrated,
   getCategories,
-  getOrders,
+  getShopSettings,
   getShapes,
   getShopProducts,
-  getShopSettings,
   saveCategories,
   saveShapes,
   saveShopProducts,
@@ -17,6 +17,7 @@ export async function GET(request: Request) {
   if (!await isAdminRequest(request)) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
   }
+  await ensureShopMigrated();
   const [categories, shapes, products, settings] = await Promise.all([
     getCategories(true),
     getShapes(true),

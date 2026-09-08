@@ -4,6 +4,7 @@ import {
   DEFAULT_SHAPES,
   DEFAULT_SHOP_PRODUCTS,
   defaultShopSettings,
+  SHOP_PACKAGING_INFO,
   SHOP_SETTINGS_KEY,
   type ShopSettings,
 } from "./seed";
@@ -49,6 +50,31 @@ async function saveShopSettings(settings: ShopSettings) {
   await env.DB.prepare("INSERT INTO settings (id, data) VALUES (1, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data")
     .bind(JSON.stringify(data))
     .run();
+}
+
+async function migrateShopDefaults() {
+  const settings = await getShopSettings();
+  if ((settings.catalogVersion ?? 0) >= 2) return;
+
+  const productRows = await env.DB.prepare("SELECT id, data FROM products").all<{ id: string; data: string }>();
+  const shapeRows = await env.DB.prepare("SELECT id, data FROM shapes").all<{ id: string; data: string }>();
+  const batch = [
+    ...productRows.results.map(row => {
+      const p = parseShopProduct(row.data);
+      if (!p) return null;
+      p.pricePerUnit = 2;
+      p.priceTiers = [];
+      p.packagingInfo = SHOP_PACKAGING_INFO;
+      return env.DB.prepare("UPDATE products SET data = ? WHERE id = ?").bind(JSON.stringify(p), row.id);
+    }).filter(Boolean) as ReturnType<typeof env.DB.prepare>[],
+    ...shapeRows.results.map(row => {
+      const s = parse<ShopShape>(row.data);
+      s.addonPrice = 0;
+      return env.DB.prepare("UPDATE shapes SET data = ? WHERE id = ?").bind(JSON.stringify(s), row.id);
+    }),
+  ];
+  if (batch.length) await env.DB.batch(batch);
+  await saveShopSettings({ ...settings, catalogVersion: 2 });
 }
 
 async function seedIfEmpty() {
@@ -141,7 +167,13 @@ export async function saveShopProducts(products: ShopProduct[]) {
   ]);
 }
 
+export async function ensureShopMigrated() {
+  await seedIfEmpty();
+  await migrateShopDefaults();
+}
+
 export async function getShopCatalog(): Promise<ShopCatalog> {
+  await ensureShopMigrated();
   const [categories, shapes, products, settings] = await Promise.all([
     getCategories(),
     getShapes(),

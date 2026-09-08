@@ -4,7 +4,6 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import type { ShopProduct } from "@/lib/shop/types";
 import { useCatalog } from "./catalog-context";
-import { getUnitPrice } from "@/lib/shop/pricing";
 import { formatEuro } from "@/lib/format";
 
 export function ShopProductCard({ product, categorySlug }: { product: ShopProduct; categorySlug?: string }) {
@@ -13,7 +12,6 @@ export function ShopProductCard({ product, categorySlug }: { product: ShopProduc
   const slug = categorySlug || cat?.slug || "shop";
   const href = product.isCustomDesign ? "/shop/custom" : `/shop/${slug}/${product.slug}`;
   const img = product.images[0] || "/products-showcase.png";
-  const fromPrice = getUnitPrice(product, product.minQuantity);
 
   return (
     <article className="shop-product-card">
@@ -28,7 +26,7 @@ export function ShopProductCard({ product, categorySlug }: { product: ShopProduc
           <h3>{product.title}</h3>
           <p>{product.shortDescription}</p>
           <div className="shop-product-card-foot">
-            <span>от {formatEuro(fromPrice)} / бр.</span>
+            <span>{formatEuro(product.pricePerUnit)} / бр.</span>
             <span className="shop-cta-mini">{product.isCustomDesign ? "Заяви" : "Персонализирай"} <ArrowRight size={14} /></span>
           </div>
         </div>

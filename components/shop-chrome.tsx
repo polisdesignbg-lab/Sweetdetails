@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Grid2X2, Heart, Home, Menu, Phone, Search, ShoppingBag, Truck, X } from "lucide-react";
+import { Grid2X2, Heart, Home, Menu, Phone, Search, Truck, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/defaults";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
 
@@ -29,12 +29,11 @@ export function ShopChrome({ settings, activeNav = "home" }: Props) {
           <Image src="/sweet-details-logo.png" alt="Sweet Details" width={240} height={160} unoptimized priority />
         </a>
         <div className="nav-actions">
-          <a href="/shop" className="nav-cta-shop">Поръчай бисквитки</a>
+          <a href="/shop" className="nav-cta-shop">Магазин</a>
           <a href="/shop" aria-label="Търсене"><Search size={26} strokeWidth={2} /></a>
         </div>
         <nav className={menu ? "open" : ""}>
           <a href="/" onClick={() => setMenu(false)}>Начало</a>
-          <a href="/shop" className="nav-cta-link" onClick={() => setMenu(false)}>Поръчай бисквитки</a>
           <a href="/shop" onClick={() => setMenu(false)}>Магазин</a>
           <a href="/#how" onClick={() => setMenu(false)}>Как се поръчва</a>
           <a href="/#faq" onClick={() => setMenu(false)}>Въпроси</a>
@@ -46,7 +45,6 @@ export function ShopChrome({ settings, activeNav = "home" }: Props) {
       <nav className="mobile-bottom" aria-label="Мобилна навигация">
         <a href="/" className={activeNav === "home" ? "bottom-active" : ""}><Home size={22} strokeWidth={2} />Начало</a>
         <a href="/shop" className={activeNav === "shop" || activeNav === "products" ? "bottom-active" : ""}><Grid2X2 size={22} strokeWidth={2} />Магазин</a>
-        <a href="/shop" className={activeNav === "order" ? "bottom-active" : ""}><ShoppingBag size={22} strokeWidth={2} />Поръчка</a>
         <a href="/#contact" className={activeNav === "contact" ? "bottom-active" : ""}><Phone size={22} strokeWidth={2} />Контакти</a>
       </nav>
     </>
@@ -70,7 +68,7 @@ export function ShopFooter({ settings }: { settings: SiteSettings }) {
             </div>
             <div className="footer-col">
               <h3>Навигация</h3>
-              <a href="/shop">Поръчай бисквитки</a>
+              <a href="/shop">Магазин</a>
               <a href="/#how">Как се поръчва</a>
               <a href="/#about">За нас</a>
               <a href="/admin">Админ</a>

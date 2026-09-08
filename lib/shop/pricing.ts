@@ -1,10 +1,6 @@
 import type { PriceTier, ShopProduct } from "./types";
 
-export function getUnitPrice(product: ShopProduct, quantity: number): number {
-  if (product.priceTiers?.length) {
-    const tier = product.priceTiers.find(t => quantity >= t.min && (t.max === undefined || quantity <= t.max));
-    if (tier) return tier.pricePerUnit;
-  }
+export function getUnitPrice(product: ShopProduct, _quantity?: number): number {
   return product.pricePerUnit;
 }
 

@@ -33,9 +33,9 @@ export async function createShopOrder(body: CreateOrderInput) {
     return { error: "Избери форма на бисквитката.", status: 400 as const };
   }
 
-  const shapeAddon = (shape?.addonPrice ?? 0) * quantity;
+  const shapeAddon = 0;
   const unitPrice = calculateTotal(product, quantity, 0) / quantity;
-  const total = calculateTotal(product, quantity, shapeAddon);
+  const total = calculateTotal(product, quantity, 0);
   const id = crypto.randomUUID();
   const order: ShopOrder = {
     id,

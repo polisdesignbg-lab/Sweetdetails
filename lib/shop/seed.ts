@@ -5,7 +5,7 @@ export const DEFAULT_SHAPES: ShopShape[] = [
   { id: "shape-circle", label: "Кръг", image: "/shapes/circle.svg", addonPrice: 0, active: true, position: 0 },
   { id: "shape-heart", label: "Сърце", image: "/shapes/heart.svg", addonPrice: 0, active: true, position: 1 },
   { id: "shape-onesie", label: "Боди", image: "/shapes/onesie.svg", addonPrice: 0, active: true, position: 2 },
-  { id: "shape-bow", label: "Панделка", image: "/shapes/flower.svg", addonPrice: 0.15, active: true, position: 3 },
+  { id: "shape-bow", label: "Панделка", image: "/shapes/flower.svg", addonPrice: 0, active: true, position: 3 },
   { id: "shape-star", label: "Звезда", image: "/shapes/star.svg", addonPrice: 0, active: true, position: 4 },
 ];
 
@@ -21,12 +21,7 @@ export const DEFAULT_CATEGORIES: ShopCategory[] = [
   { id: "cat-custom", slug: "individualen-dizayn", name: "Индивидуален дизайн", description: "Имате собствена идея? Опишете я и ще я реализираме.", image: "/shapes/heart.svg", active: true, position: 8 },
 ];
 
-const tiers = [
-  { min: 10, max: 19, pricePerUnit: 2.25 },
-  { min: 20, max: 29, pricePerUnit: 2.05 },
-  { min: 30, max: 49, pricePerUnit: 1.95 },
-  { min: 50, pricePerUnit: 1.85 },
-];
+const PACKAGING_INFO = "Всяка бисквитка пристига опакована в целофан и с панделка.";
 
 const allShapeIds = DEFAULT_SHAPES.map(s => s.id);
 const colors = ["Розово", "Бебешко синьо", "Бежово", "Зелено", "Лилаво", "Жълто", "Друго"];
@@ -37,14 +32,14 @@ function demoProduct(p: Partial<ShopProduct> & Pick<ShopProduct, "id" | "title" 
     slug,
     description: p.shortDescription,
     images: p.images ?? ["/products-showcase.png"],
-    pricePerUnit: 2.25,
-    priceTiers: tiers,
+    pricePerUnit: 2,
+    priceTiers: [],
     minQuantity: 10,
     quantityStep: 1,
     shapeIds: allShapeIds,
     themeColors: colors,
     sizeInfo: "Приблизително 6–7 см, в зависимост от формата.",
-    packagingInfo: "Без панделка — опаковка в целофанче. Индивидуална опаковка с панделка по заявка.",
+    packagingInfo: PACKAGING_INFO,
     productInfo: "Маслени бисквитки с фонданов печат. Минимален срок за поръчка: 7 работни дни.",
     featured: false,
     active: true,
@@ -122,8 +117,10 @@ export const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
   }),
 ];
 
+export { PACKAGING_INFO as SHOP_PACKAGING_INFO };
+
 export const SHOP_SETTINGS_KEY = "shop_settings";
 
-export type ShopSettings = { minLeadDays: number };
+export type ShopSettings = { minLeadDays: number; catalogVersion?: number };
 
-export const defaultShopSettings: ShopSettings = { minLeadDays: 7 };
+export const defaultShopSettings: ShopSettings = { minLeadDays: 7, catalogVersion: 2 };
