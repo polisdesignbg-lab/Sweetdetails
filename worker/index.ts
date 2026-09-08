@@ -28,17 +28,9 @@ function withNoStoreHtml(response: Response): Response {
 
 function maybeRedirect(request: Request): Response | null {
   const url = new URL(request.url);
-  let changed = false;
-
-  if (url.protocol === "http:") {
-    url.protocol = "https:";
-    changed = true;
-  }
-  if (url.hostname === "www.sweetdetails.ink") {
-    url.hostname = "sweetdetails.ink";
-    changed = true;
-  }
-  if (!changed) return null;
+  // Only normalize www → apex. Cloudflare already handles HTTP → HTTPS.
+  if (url.hostname !== "www.sweetdetails.ink") return null;
+  url.hostname = "sweetdetails.ink";
   return Response.redirect(url.toString(), 301);
 }
 
