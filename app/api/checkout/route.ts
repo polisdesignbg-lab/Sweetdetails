@@ -65,7 +65,9 @@ export async function POST(request: Request) {
       fullName: legacy.contact.name,
       email: legacy.contact.email,
       phone: legacy.contact.phone,
-      city: legacy.contact.city || "—",
+      city: legacy.contact.city || "",
+      deliveryMethod: "econt_office",
+      econtOffice: "Ще се уточни по телефона",
     },
   });
 

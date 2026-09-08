@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { CalendarClock, Grid2X2, Home, Menu, Phone, Search, Truck, X } from "lucide-react";
+import { CalendarClock, Grid2X2, Home, Menu, Phone, ShoppingCart, Truck, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/defaults";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
+import { useCart } from "@/components/shop/cart-context";
 
 type Props = {
   settings: SiteSettings;
-  activeNav?: "home" | "shop" | "products" | "order" | "contact";
+  activeNav?: "home" | "shop" | "products" | "order" | "contact" | "cart";
 };
 
 export function ShopChrome({ settings, activeNav = "home" }: Props) {
   const [menu, setMenu] = useState(false);
+  const { count } = useCart();
 
   return (
     <>
@@ -29,12 +31,15 @@ export function ShopChrome({ settings, activeNav = "home" }: Props) {
           <Image src="/sweet-details-logo.png" alt="Sweet Details" width={240} height={160} unoptimized priority />
         </a>
         <div className="nav-actions">
-          <a href="/shop" className="nav-cta-shop">Магазин</a>
-          <a href="/shop" aria-label="Търсене"><Search size={26} strokeWidth={2} /></a>
+          <a href="/shop/cart" className="nav-cart" aria-label={`Количка${count ? `, ${count} продукта` : ""}`}>
+            <ShoppingCart size={26} strokeWidth={2} />
+            {count > 0 && <span className="nav-cart-badge">{count > 99 ? "99+" : count}</span>}
+          </a>
         </div>
         <nav className={menu ? "open" : ""}>
           <a href="/" onClick={() => setMenu(false)}>Начало</a>
           <a href="/shop" onClick={() => setMenu(false)}>Магазин</a>
+          <a href="/shop/cart" onClick={() => setMenu(false)}>Количка{count > 0 ? ` (${count})` : ""}</a>
           <a href="/#how" onClick={() => setMenu(false)}>Как се поръчва</a>
           <a href="/#faq" onClick={() => setMenu(false)}>Въпроси</a>
           <a href="/#contact" onClick={() => setMenu(false)}>Контакти</a>
@@ -44,6 +49,13 @@ export function ShopChrome({ settings, activeNav = "home" }: Props) {
       <nav className="mobile-bottom" aria-label="Мобилна навигация">
         <a href="/" className={activeNav === "home" ? "bottom-active" : ""}><Home size={22} strokeWidth={2} />Начало</a>
         <a href="/shop" className={activeNav === "shop" || activeNav === "products" ? "bottom-active" : ""}><Grid2X2 size={22} strokeWidth={2} />Магазин</a>
+        <a href="/shop/cart" className={activeNav === "cart" || activeNav === "order" ? "bottom-active" : ""}>
+          <span className="mobile-cart-wrap">
+            <ShoppingCart size={22} strokeWidth={2} />
+            {count > 0 && <span className="nav-cart-badge mobile">{count > 99 ? "99+" : count}</span>}
+          </span>
+          Количка
+        </a>
         <a href="/#contact" className={activeNav === "contact" ? "bottom-active" : ""}><Phone size={22} strokeWidth={2} />Контакти</a>
       </nav>
     </>
@@ -68,6 +80,7 @@ export function ShopFooter({ settings }: { settings: SiteSettings }) {
             <div className="footer-col">
               <h3>Навигация</h3>
               <a href="/shop">Магазин</a>
+              <a href="/shop/cart">Количка</a>
               <a href="/#how">Как се поръчва</a>
               <a href="/#about">За нас</a>
             </div>

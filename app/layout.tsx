@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "../public/shop.css";
+import { AppProviders } from "@/components/providers";
 import {
   SEO_DESCRIPTION,
   SEO_KEYWORDS,
@@ -95,7 +96,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased"><AppProviders>{children}</AppProviders></body>
     </html>
   );
 }

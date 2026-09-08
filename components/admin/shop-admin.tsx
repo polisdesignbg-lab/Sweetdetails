@@ -591,28 +591,44 @@ function OrderDetail({ order, onBack, onStatus, busy }: {
           <p><strong>{order.contact.fullName}</strong></p>
           <p>{order.contact.phone}</p>
           <p>{order.contact.email}</p>
-          <p>{order.contact.city}</p>
+          {order.contact.city && <p>{order.contact.city}</p>}
+          <p><strong>Еконт офис:</strong> {order.contact.econtOffice || "—"}</p>
           {order.contact.deliveryNotes && <p>{order.contact.deliveryNotes}</p>}
         </section>
         <section>
-          <h3>Продукт</h3>
-          <p><strong>{order.productTitle}</strong></p>
-          <p>Форма: {order.shapeLabel || "—"}</p>
-          <p>Количество: {order.quantity} бр.</p>
-          <p>Ед. цена: {order.unitPrice.toFixed(2)} €</p>
+          <h3>Продукти</h3>
+          {(order.items?.length ? order.items : [{
+            productTitle: order.productTitle,
+            quantity: order.quantity,
+            shapeLabel: order.shapeLabel,
+            unitPrice: order.unitPrice,
+            lineTotal: order.total,
+            customization: order.customization,
+          }]).map((item, idx) => (
+            <div key={idx} style={{ marginBottom: 12 }}>
+              <p><strong>{item.productTitle}</strong></p>
+              <p>Форма: {item.shapeLabel || "—"} · {item.quantity} бр. · {item.lineTotal.toFixed(2)} €</p>
+            </div>
+          ))}
           <p><strong>Общо: {order.total.toFixed(2)} €</strong></p>
         </section>
         <section>
           <h3>Персонализация</h3>
-          <dl className="admin-dl">
-            <div><dt>Повод</dt><dd>{c.occasion || "—"}</dd></div>
-            <div><dt>Надпис</dt><dd>{c.inscription || "—"}</dd></div>
-            <div><dt>Име</dt><dd>{c.childName || "—"}</dd></div>
-            <div><dt>Дата върху дизайна</dt><dd>{c.designDate || "—"}</dd></div>
-            <div><dt>Цвят</dt><dd>{c.themeColor === "Друго" ? c.customColor || "Друго" : c.themeColor || "—"}</dd></div>
-            <div><dt>Необходими до</dt><dd>{c.neededByDate || "—"}</dd></div>
-            <div><dt>Бележки</dt><dd>{c.notes || "—"}</dd></div>
-          </dl>
+          {(order.items?.length ? order.items : [{ customization: c, productTitle: order.productTitle }]).map((item, idx) => {
+            const custom = item.customization;
+            return (
+              <dl className="admin-dl" key={idx} style={{ marginBottom: 16 }}>
+                {order.items && order.items.length > 1 && <div><dt>Продукт</dt><dd>{item.productTitle}</dd></div>}
+                <div><dt>Повод</dt><dd>{custom.occasion || "—"}</dd></div>
+                <div><dt>Надпис</dt><dd>{custom.inscription || "—"}</dd></div>
+                <div><dt>Име</dt><dd>{custom.childName || "—"}</dd></div>
+                <div><dt>Дата върху дизайна</dt><dd>{custom.designDate || "—"}</dd></div>
+                <div><dt>Цвят</dt><dd>{custom.themeColor === "Друго" ? custom.customColor || "Друго" : custom.themeColor || "—"}</dd></div>
+                <div><dt>Необходими до</dt><dd>{custom.neededByDate || "—"}</dd></div>
+                <div><dt>Бележки</dt><dd>{custom.notes || "—"}</dd></div>
+              </dl>
+            );
+          })}
           {c.referenceImageUrl && (
             <p><a href={c.referenceImageUrl} target="_blank" rel="noopener noreferrer">Референтна снимка</a></p>
           )}

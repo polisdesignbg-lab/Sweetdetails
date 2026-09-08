@@ -63,7 +63,9 @@ export type OrderContact = {
   fullName: string;
   phone: string;
   email: string;
-  city: string;
+  city?: string;
+  deliveryMethod?: "econt_office" | "address";
+  econtOffice?: string;
   deliveryNotes?: string;
 };
 
@@ -77,6 +79,20 @@ export type OrderStatus =
   | "completed"
   | "cancelled";
 
+export type ShopOrderItem = {
+  productId: string;
+  productTitle: string;
+  productSlug: string;
+  categorySlug?: string;
+  shapeId?: string;
+  shapeLabel?: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  image?: string;
+  customization: OrderCustomization;
+};
+
 export type ShopOrder = {
   id: string;
   productId: string;
@@ -89,10 +105,27 @@ export type ShopOrder = {
   quantity: number;
   unitPrice: number;
   total: number;
+  items?: ShopOrderItem[];
   customization: OrderCustomization;
   contact: OrderContact;
   status: OrderStatus;
   createdAt: string;
+};
+
+export type CartItem = {
+  key: string;
+  productId: string;
+  productTitle: string;
+  productSlug: string;
+  categorySlug?: string;
+  image?: string;
+  shapeId?: string;
+  shapeLabel?: string;
+  quantity: number;
+  unitPrice: number;
+  minQuantity: number;
+  quantityStep: number;
+  customization: OrderCustomization;
 };
 
 export type ShopCatalog = {

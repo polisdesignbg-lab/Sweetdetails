@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ArrowRight, Minus, Plus, Upload } from "lucide-react";
-import type { OrderCustomization, OrderContact, ShopProduct, ShopShape } from "@/lib/shop/types";
+import { ArrowRight, Check, Minus, Plus, ShoppingCart, Upload } from "lucide-react";
+import type { OrderCustomization, ShopProduct, ShopShape } from "@/lib/shop/types";
 import { calculateTotal, getUnitPrice, minLeadDate } from "@/lib/shop/pricing";
 import { formatEuro } from "@/lib/format";
 import { useCatalog } from "./catalog-context";
+import { useCart } from "./cart-context";
 
 type Props = {
   product: ShopProduct;
@@ -16,6 +17,7 @@ type Props = {
 
 export function ShopOrderForm({ product, categorySlug, shapes: shapeProp }: Props) {
   const { shapes: allShapes, settings } = useCatalog();
+  const { addItem } = useCart();
   const shapes = (shapeProp ?? allShapes).filter(s => product.shapeIds.includes(s.id));
   const minQty = product.minQuantity;
   const step = product.quantityStep || 1;
@@ -24,11 +26,10 @@ export function ShopOrderForm({ product, categorySlug, shapes: shapeProp }: Prop
   const [quantity, setQuantity] = useState(minQty);
   const [shapeId, setShapeId] = useState("");
   const [customization, setCustomization] = useState<OrderCustomization>({});
-  const [contact, setContact] = useState<OrderContact>({ fullName: "", email: "", phone: "", city: "", deliveryNotes: "" });
   const [file, setFile] = useState<File | null>(null);
-  const [stepView, setStepView] = useState<"form" | "summary">("form");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [added, setAdded] = useState(false);
 
   const selectedShape = shapes.find(s => s.id === shapeId);
   const unitPrice = getUnitPrice(product, quantity);
@@ -57,97 +58,40 @@ export function ShopOrderForm({ product, categorySlug, shapes: shapeProp }: Prop
     return true;
   };
 
-  const validateContact = () => {
-    if (!validateForm()) return false;
-    const missing: string[] = [];
-    if (!contact.fullName.trim()) missing.push("име");
-    if (!contact.email.trim()) missing.push("имейл");
-    if (!contact.phone.trim()) missing.push("телефон");
-    if (!contact.city.trim()) missing.push("населено място");
-    if (missing.length) {
-      setError(`Моля, попълни: ${missing.join(", ")}.`);
-      return false;
-    }
-    setError("");
-    return true;
-  };
-
-  const submit = async () => {
-    if (!validateContact()) return;
+  const addToCart = async () => {
+    if (!validateForm()) return;
     setBusy(true);
     setError("");
     try {
-      let referenceImageUrl = "";
+      let referenceImageUrl = customization.referenceImageUrl || "";
       if (file) {
         const fd = new FormData();
         fd.append("file", file);
         const u = await fetch("/api/upload", { method: "POST", body: fd });
         if (u.ok) referenceImageUrl = (await u.json()).url;
       }
-      const r = await fetch("/api/shop/order", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          product,
-          shape: selectedShape,
-          quantity,
-          customization: { ...customization, referenceImageUrl: referenceImageUrl || customization.referenceImageUrl },
-          contact,
-          categorySlug,
-        }),
+      addItem({
+        productId: product.id,
+        productTitle: product.title,
+        productSlug: product.slug,
+        categorySlug,
+        image: product.images[0] || "/products-showcase.png",
+        shapeId: selectedShape?.id,
+        shapeLabel: selectedShape?.label,
+        quantity,
+        unitPrice,
+        minQuantity: minQty,
+        quantityStep: step,
+        customization: { ...customization, referenceImageUrl },
       });
-      const data = await r.json();
-      if (!r.ok) {
-        setError(data.error || "Грешка при изпращане.");
-        return;
-      }
-      location.href = data.redirectUrl || `/shop/thank-you?order=${data.orderId}`;
+      setAdded(true);
+      window.setTimeout(() => setAdded(false), 2500);
     } catch {
-      setError("Не успяхме да изпратим поръчката. Опитай отново.");
+      setError("Не успяхме да добавим продукта. Опитай отново.");
     } finally {
       setBusy(false);
     }
   };
-
-  const summaryRows = useMemo(() => [
-    ...(product.isCustomDesign ? [["Повод", customization.occasion || "—"]] : []),
-    ["Продукт", product.title],
-    ["Форма", selectedShape?.label || "—"],
-    ["Количество", `${quantity} бр.`],
-    ["Надпис", customization.inscription || "—"],
-    ["Име", customization.childName || "—"],
-    ["Дата върху дизайна", customization.designDate || "—"],
-    ["Цвят", customization.themeColor === "Друго" ? customization.customColor || "Друго" : customization.themeColor || "—"],
-    ["Необходими до", customization.neededByDate || "—"],
-    ["Бележки", customization.notes || "—"],
-    ["Крайна цена", formatEuro(total)],
-  ], [product.title, selectedShape, quantity, customization, total]);
-
-  if (stepView === "summary") {
-    return (
-      <div className="shop-order-form">
-        <h3>Обобщение на поръчката</h3>
-        <dl className="shop-summary">
-          {summaryRows.map(([k, v]) => (
-            <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
-          ))}
-        </dl>
-        <h3>Данни за доставка</h3>
-        <div className="shop-fields">
-          <label className="field">Име и фамилия *<input value={contact.fullName} onChange={e => setContact({ ...contact, fullName: e.target.value })} /></label>
-          <label className="field">Телефон *<input type="tel" value={contact.phone} onChange={e => setContact({ ...contact, phone: e.target.value })} /></label>
-          <label className="field">Имейл *<input type="email" value={contact.email} onChange={e => setContact({ ...contact, email: e.target.value })} /></label>
-          <label className="field">Населено място *<input value={contact.city} onChange={e => setContact({ ...contact, city: e.target.value })} /></label>
-          <label className="field wide">Адрес / бележки за доставка<textarea value={contact.deliveryNotes || ""} onChange={e => setContact({ ...contact, deliveryNotes: e.target.value })} /></label>
-        </div>
-        {error && <div className="form-message err">{error}</div>}
-        <div className="shop-form-actions">
-          <button type="button" className="shop-btn-secondary" onClick={() => setStepView("form")}>Назад</button>
-          <button type="button" className="shop-btn-primary" disabled={busy} onClick={submit}>{busy ? "Изпращаме…" : "Заяви поръчка"}<ArrowRight size={18} /></button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="shop-order-form">
@@ -185,8 +129,14 @@ export function ShopOrderForm({ product, categorySlug, shapes: shapeProp }: Prop
       </div>
 
       {error && <div className="form-message err">{error}</div>}
+      {added && <div className="form-message ok"><Check size={16} /> Добавено в количката</div>}
       <div className="shop-order-total"><span>Ориентировъчно</span><strong>{formatEuro(total)}</strong></div>
-      <button type="button" className="shop-btn-primary shop-btn-block" onClick={() => validateForm() && setStepView("summary")}>Преглед и заявка <ArrowRight size={18} /></button>
+      <div className="shop-form-actions shop-form-actions-stack">
+        <button type="button" className="shop-btn-primary shop-btn-block" disabled={busy} onClick={addToCart}>
+          {busy ? "Добавяне…" : "Добави в количката"} <ShoppingCart size={18} />
+        </button>
+        <a href="/shop/cart" className="shop-btn-secondary shop-btn-block">Към количката <ArrowRight size={16} /></a>
+      </div>
     </div>
   );
 }
