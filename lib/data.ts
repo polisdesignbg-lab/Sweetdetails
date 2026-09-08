@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { defaultProducts, defaultSettings, defaultShapesByProductId, type Product, type ProductOption, type SiteSettings } from "./defaults";
 
-function normalizeOptions(raw: ProductOption[], productId: string): ProductOption[] {
+function normalizeOptions(raw: ProductOption[] | undefined, productId: string): ProductOption[] {
   const fallback = defaultProducts.find(p => p.id === productId)?.options ?? [];
   const source = Array.isArray(raw) && raw.length ? raw : fallback;
   const merged = source.map(o => ({
@@ -14,25 +14,81 @@ function normalizeOptions(raw: ProductOption[], productId: string): ProductOptio
   return merged;
 }
 
-function normalizeProduct(raw: Product): Product {
+type RawProduct = Product & {
+  pricePerUnit?: number;
+  shortDescription?: string;
+  categoryId?: string;
+  slug?: string;
+  featured?: boolean;
+};
+
+function normalizeProduct(raw: RawProduct): Product {
+  const price = typeof raw.price === "number"
+    ? raw.price
+    : typeof raw.pricePerUnit === "number"
+      ? raw.pricePerUnit
+      : 2;
+
   const shapes = Array.isArray(raw.shapes) && raw.shapes.length
     ? raw.shapes
     : (defaultShapesByProductId[raw.id] ?? []);
+
   return {
-    ...raw,
+    id: raw.id,
+    title: raw.title || "Продукт",
+    category: raw.category || "Други",
+    description: raw.description || raw.shortDescription || "",
+    price,
+    minQuantity: typeof raw.minQuantity === "number" ? raw.minQuantity : 10,
+    images: Array.isArray(raw.images) && raw.images.length ? raw.images : ["/products-showcase.png"],
     shapes,
-    images: Array.isArray(raw.images) ? raw.images : [],
+    badge: raw.badge || (raw.featured ? "Най-любими" : undefined),
     options: normalizeOptions(raw.options, raw.id),
   };
 }
 
-export async function getContent(): Promise<{settings: SiteSettings; products: Product[]}> {
+function parseProductRow(data: string): Product | null {
   try {
-    const setting = await env.DB.prepare("SELECT data FROM settings WHERE id = 1").first<{data:string}>();
-    const rows = await env.DB.prepare("SELECT data FROM products ORDER BY position ASC").all<{data:string}>();
+    const raw = JSON.parse(data) as RawProduct;
+    if (!raw?.id || !raw?.title) return null;
+    return normalizeProduct(raw);
+  } catch {
+    return null;
+  }
+}
+
+export async function getContent(): Promise<{ settings: SiteSettings; products: Product[] }> {
+  try {
+    const setting = await env.DB.prepare("SELECT data FROM settings WHERE id = 1").first<{ data: string }>();
+    const rows = await env.DB.prepare("SELECT data FROM products ORDER BY position ASC").all<{ data: string }>();
+    const settingsData = setting ? (JSON.parse(setting.data) as Record<string, unknown>) : {};
+    // Keep site settings only — ignore nested shop_settings blob fields
+    const settings: SiteSettings = {
+      ...defaultSettings,
+      brand: String(settingsData.brand ?? defaultSettings.brand),
+      headline: String(settingsData.headline ?? defaultSettings.headline),
+      intro: String(settingsData.intro ?? defaultSettings.intro),
+      announcement: String(settingsData.announcement ?? defaultSettings.announcement),
+      about: String(settingsData.about ?? defaultSettings.about),
+      leadDays: String(settingsData.leadDays ?? defaultSettings.leadDays),
+      primaryColor: String(settingsData.primaryColor ?? defaultSettings.primaryColor),
+      instagram: String(settingsData.instagram ?? ""),
+      facebook: String(settingsData.facebook ?? ""),
+      tiktok: String(settingsData.tiktok ?? ""),
+      email: String(settingsData.email ?? defaultSettings.email),
+      phone: String(settingsData.phone ?? ""),
+      categories: Array.isArray(settingsData.categories)
+        ? (settingsData.categories as string[])
+        : defaultSettings.categories,
+    };
+
+    const products = rows.results
+      .map(r => parseProductRow(r.data))
+      .filter((p): p is Product => p !== null);
+
     return {
-      settings: setting ? {...defaultSettings, ...JSON.parse(setting.data)} : defaultSettings,
-      products: rows.results.length ? rows.results.map((r) => normalizeProduct(JSON.parse(r.data))) : defaultProducts,
+      settings,
+      products: products.length ? products : defaultProducts,
     };
   } catch {
     return { settings: defaultSettings, products: defaultProducts };
@@ -40,7 +96,20 @@ export async function getContent(): Promise<{settings: SiteSettings; products: P
 }
 
 export async function saveContent(settings: SiteSettings, products: Product[]) {
-  await env.DB.prepare("INSERT INTO settings (id,data) VALUES (1,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data").bind(JSON.stringify(settings)).run();
-  const statements = [env.DB.prepare("DELETE FROM products"), ...products.map((p, i) => env.DB.prepare("INSERT INTO products (id,data,position) VALUES (?,?,?)").bind(p.id, JSON.stringify(p), i))];
+  const existing = await env.DB.prepare("SELECT data FROM settings WHERE id = 1").first<{ data: string }>();
+  const data = existing ? (JSON.parse(existing.data) as Record<string, unknown>) : {};
+  Object.assign(data, settings);
+  await env.DB.prepare("INSERT INTO settings (id,data) VALUES (1,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data")
+    .bind(JSON.stringify(data))
+    .run();
+  // Do not wipe shop catalog products from homepage admin save.
+  // Homepage favorites use normalized shop/legacy products from the same table.
+  const statements = [
+    env.DB.prepare("DELETE FROM products"),
+    ...products.map((p, i) =>
+      env.DB.prepare("INSERT INTO products (id, slug, data, position, active) VALUES (?, ?, ?, ?, ?)")
+        .bind(p.id, p.id, JSON.stringify(p), i, 1),
+    ),
+  ];
   await env.DB.batch(statements);
 }

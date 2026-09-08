@@ -6,7 +6,7 @@ import { ArrowRight, Baby, BriefcaseBusiness, CalendarHeart, Ellipsis, Graduatio
 import type { Product, SiteSettings } from "@/lib/defaults";
 import { SEO_FAQ } from "@/lib/seo";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
-import { ProductCard, OrderModal } from "@/components/shop-ui";
+import { ProductCard } from "@/components/shop-ui";
 import { ShopChrome, ShopFooter } from "@/components/shop-chrome";
 
 type Props = { initial: { settings: SiteSettings; products: Product[] } };
@@ -21,7 +21,6 @@ export default function Storefront({ initial }: Props) {
     }).catch(() => {});
     return () => { active = false; };
   }, []);
-  const [selected, setSelected] = useState<Product | null>(null);
   const favorites = products.slice(0, 3);
 
   const scrollToCategory = (cat: string) => {
@@ -82,7 +81,13 @@ export default function Storefront({ initial }: Props) {
           <a href="/shop" className="view-all-link">Виж всички <ArrowRight /></a>
         </div>
         <div className="grid">
-          {favorites.map(p => <ProductCard product={p} key={p.id} onOpen={() => setSelected(p)} />)}
+          {favorites.map(p => (
+            <ProductCard
+              key={p.id}
+              product={p}
+              onOpen={() => { window.location.href = "/shop"; }}
+            />
+          ))}
         </div>
       </section>
 
@@ -142,7 +147,6 @@ export default function Storefront({ initial }: Props) {
       </section>
 
       <ShopFooter settings={settings} />
-      {selected && <OrderModal product={selected} onClose={() => setSelected(null)} />}
     </main>
   );
 }
