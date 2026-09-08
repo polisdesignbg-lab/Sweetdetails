@@ -38,7 +38,6 @@ export function ShopChrome({ settings, activeNav = "home" }: Props) {
           <a href="/#how" onClick={() => setMenu(false)}>Как се поръчва</a>
           <a href="/#faq" onClick={() => setMenu(false)}>Въпроси</a>
           <a href="/#contact" onClick={() => setMenu(false)}>Контакти</a>
-          <a href="/admin" onClick={() => setMenu(false)}>Админ</a>
         </nav>
       </header>
 
@@ -71,7 +70,6 @@ export function ShopFooter({ settings }: { settings: SiteSettings }) {
               <a href="/shop">Магазин</a>
               <a href="/#how">Как се поръчва</a>
               <a href="/#about">За нас</a>
-              <a href="/admin">Админ</a>
             </div>
           </div>
         </div>
