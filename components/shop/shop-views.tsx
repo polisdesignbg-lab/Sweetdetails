@@ -7,15 +7,13 @@ import { ProductGallery, ShopOrderForm } from "./order-form";
 import { ShopChrome, ShopFooter } from "@/components/shop-chrome";
 import { defaultSettings } from "@/lib/defaults";
 import type { SiteSettings } from "@/lib/defaults";
-import type { ShopProduct } from "@/lib/shop/types";
 import { formatEuro } from "@/lib/format";
-import { ShopHomeView } from "./shop-home-view";
 
 export function CategoryView({ slug }: { slug: string }) {
   const catalog = useCatalog();
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
-  const cat = catalog.categories.find(c => c.slug === slug);
-  const products = catalog.products.filter(p => p.categoryId === cat?.id);
+  const cat = catalog.categories.find(c => c.slug === slug && !c.slug.includes("individualen"));
+  const products = catalog.products.filter(p => p.categoryId === cat?.id && p.active && !p.isCustomDesign);
 
   useEffect(() => {
     fetch("/api/content").then(r => r.ok ? r.json() : null).then(d => d?.settings && setSettings(d.settings)).catch(() => {});
@@ -54,6 +52,10 @@ export function ProductView({ categorySlug, productSlug }: { categorySlug: strin
 
   const related = catalog.products.filter(p => p.categoryId === product.categoryId && p.id !== product.id && p.active && !p.isCustomDesign);
 
+  if (product.isCustomDesign) {
+    return <CategoryView slug={categorySlug} />;
+  }
+
   return (
     <main className="static-fallback shop-page" style={{ "--brand": settings.primaryColor } as React.CSSProperties}>
       <ShopChrome settings={settings} activeNav="shop" />
@@ -88,28 +90,7 @@ export function ProductView({ categorySlug, productSlug }: { categorySlug: strin
 }
 
 export function CustomDesignView() {
-  const catalog = useCatalog();
-  const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
-  const product = catalog.products.find(p => p.isCustomDesign) as ShopProduct | undefined;
-
-  useEffect(() => {
-    fetch("/api/content").then(r => r.ok ? r.json() : null).then(d => d?.settings && setSettings(d.settings)).catch(() => {});
-  }, []);
-
-  if (!product) return <ShopFallback settings={settings} message="Индивидуалният дизайн скоро ще бъде наличен." />;
-
-  return (
-    <main className="static-fallback shop-page" style={{ "--brand": settings.primaryColor } as React.CSSProperties}>
-      <ShopChrome settings={settings} activeNav="shop" />
-      <section className="shop-hero shop-hero-compact">
-        <a href="/shop" className="shop-back">← Магазин</a>
-        <h1>Индивидуален дизайн</h1>
-        <p>Опишете повода, желания надпис, цветове и форма — ще подготвим уникален дизайн за вас.</p>
-      </section>
-      <section className="shop-section"><ShopOrderForm product={product} categorySlug="individualen-dizayn" /></section>
-      <ShopFooter settings={settings} />
-    </main>
-  );
+  return <ShopFallback settings={defaultSettings} message="Поръчките са само през магазина от качените продукти." />;
 }
 
 function ShopFallback({ settings, message }: { settings: SiteSettings; message: string }) {

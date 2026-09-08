@@ -1,12 +1,5 @@
-"use client";
-
-import { CatalogProvider } from "@/components/shop/catalog-context";
-import { CustomDesignView } from "@/components/shop/shop-views";
+import { redirect } from "next/navigation";
 
 export default function CustomDesignPage() {
-  return (
-    <CatalogProvider>
-      <CustomDesignView />
-    </CatalogProvider>
-  );
+  redirect("/shop");
 }

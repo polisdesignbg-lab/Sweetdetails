@@ -12,11 +12,15 @@ export function ShopHomeView() {
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
 
   useEffect(() => {
-    fetch("/api/content").then(r => r.ok ? r.json() : null).then(d => d?.settings && setSettings(d.settings)).catch(() => {});
+    fetch("/api/content").then(r => (r.ok ? r.json() : null)).then(d => d?.settings && setSettings(d.settings)).catch(() => {});
   }, []);
 
-  const featured = catalog.products.filter(p => p.featured && p.active);
-  const regular = catalog.products.filter(p => !p.isCustomDesign);
+  const activeProducts = catalog.products.filter(p => p.active && !p.isCustomDesign);
+  const featured = activeProducts.filter(p => p.featured);
+  const regular = activeProducts.filter(p => !p.featured);
+  const categories = catalog.categories.filter(c =>
+    c.active && !c.slug.includes("individualen") && c.id !== "cat-custom",
+  );
 
   return (
     <main className="static-fallback shop-page" style={{ "--brand": settings.primaryColor } as React.CSSProperties}>
@@ -30,26 +34,37 @@ export function ShopHomeView() {
       <section className="shop-section">
         <h2>Избери по повод</h2>
         <div className="shop-category-grid">
-          {catalog.categories.filter(c => !c.slug.includes("individualen")).map(c => (
+          {categories.map(c => (
             <CategoryCard key={c.id} slug={c.slug} name={c.name} description={c.description} image={c.image} />
           ))}
         </div>
-        <a href="/shop/custom" className="shop-custom-banner">
-          <strong>Индивидуален дизайн</strong>
-          <span>Имате собствена идея? Опишете я и ще я реализираме.</span>
-        </a>
       </section>
 
       {!!featured.length && (
         <section className="shop-section">
-          <h2>Най-поръчвани дизайни</h2>
-          <div className="shop-product-grid">{featured.map(p => <ShopProductCard key={p.id} product={p} />)}</div>
+          <h2>Най-поръчвани</h2>
+          <div className="shop-featured-row">
+            {featured.map(p => (
+              <ShopProductCard key={p.id} product={p} />
+            ))}
+          </div>
         </section>
       )}
 
       <section className="shop-section">
         <h2>Всички продукти</h2>
-        <div className="shop-product-grid">{regular.map(p => <ShopProductCard key={p.id} product={p} />)}</div>
+        <div className="shop-product-grid">
+          {regular.map(p => (
+            <ShopProductCard key={p.id} product={p} />
+          ))}
+        </div>
+        {!regular.length && (
+          <p className="shop-empty">
+            {featured.length
+              ? "Останалите продукти ще се появят тук. Най-поръчваните са в лентата по-горе."
+              : "Скоро ще добавим продукти."}
+          </p>
+        )}
       </section>
 
       <ShopFooter settings={settings} />

@@ -18,7 +18,6 @@ export const DEFAULT_CATEGORIES: ShopCategory[] = [
   { id: "cat-school", slug: "detska-gradina-uchilishte", name: "Детска градина / Училище", description: "За първи учебен ден и празници в детската градина.", image: "/shapes/star.svg", active: true, position: 5 },
   { id: "cat-holidays", slug: "praznitsi", name: "Празници", description: "Коледни, великденски и сезонни дизайни.", image: "/shapes/flower.svg", active: true, position: 6 },
   { id: "cat-corporate", slug: "firmeni-biskvitki", name: "Фирмени бисквитки", description: "Брандирани бисквитки за събития и подаръци.", image: "/shapes/circle.svg", active: true, position: 7 },
-  { id: "cat-custom", slug: "individualen-dizayn", name: "Индивидуален дизайн", description: "Имате собствена идея? Опишете я и ще я реализираме.", image: "/shapes/heart.svg", active: true, position: 8 },
 ];
 
 const PACKAGING_INFO = "Всяка бисквитка пристига опакована в целофан и с панделка.";
@@ -104,16 +103,6 @@ export const DEFAULT_SHOP_PRODUCTS: ShopProduct[] = [
     shortDescription: "Елегантни бисквитки с монограма или дата на сватбата.",
     featured: true,
     position: 5,
-  }),
-  demoProduct({
-    id: "prod-custom",
-    slug: "individualen-dizayn",
-    title: "Индивидуален дизайн",
-    categoryId: "cat-custom",
-    shortDescription: "Опишете вашата идея — ще подготвим уникален дизайн.",
-    isCustomDesign: true,
-    featured: false,
-    position: 99,
   }),
 ];
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { CalendarClock, Grid2X2, Home, Menu, Phone, ShoppingCart, Truck, X } from "lucide-react";
+import { CalendarClock, Menu, ShoppingCart, Truck, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/defaults";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
 import { useCart } from "@/components/shop/cart-context";
@@ -12,7 +12,7 @@ type Props = {
   activeNav?: "home" | "shop" | "products" | "order" | "contact" | "cart";
 };
 
-export function ShopChrome({ settings, activeNav = "home" }: Props) {
+export function ShopChrome({ settings }: Props) {
   const [menu, setMenu] = useState(false);
   const { count } = useCart();
 
@@ -45,19 +45,6 @@ export function ShopChrome({ settings, activeNav = "home" }: Props) {
           <a href="/#contact" onClick={() => setMenu(false)}>Контакти</a>
         </nav>
       </header>
-
-      <nav className="mobile-bottom" aria-label="Мобилна навигация">
-        <a href="/" className={activeNav === "home" ? "bottom-active" : ""}><Home size={22} strokeWidth={2} />Начало</a>
-        <a href="/shop" className={activeNav === "shop" || activeNav === "products" ? "bottom-active" : ""}><Grid2X2 size={22} strokeWidth={2} />Магазин</a>
-        <a href="/shop/cart" className={activeNav === "cart" || activeNav === "order" ? "bottom-active" : ""}>
-          <span className="mobile-cart-wrap">
-            <ShoppingCart size={22} strokeWidth={2} />
-            {count > 0 && <span className="nav-cart-badge mobile">{count > 99 ? "99+" : count}</span>}
-          </span>
-          Количка
-        </a>
-        <a href="/#contact" className={activeNav === "contact" ? "bottom-active" : ""}><Phone size={22} strokeWidth={2} />Контакти</a>
-      </nav>
     </>
   );
 }

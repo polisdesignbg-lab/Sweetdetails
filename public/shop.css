@@ -15,7 +15,6 @@
   --logo-max-w: min(260px, 64vw);
   --cat-circle: clamp(80px, 22vw, 112px);
   --cat-icon: clamp(38px, 10vw, 52px);
-  --bottom-nav-h: 64px;
 }
 
 html { scroll-behavior: smooth; background: #fff; }
@@ -25,7 +24,7 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 .static-fallback {
   overflow-x: hidden;
   background: #fff;
-  padding-bottom: calc(var(--bottom-nav-h) + 12px);
+  padding-bottom: 24px;
   font-family: 'Nunito', sans-serif;
 }
 
@@ -739,32 +738,6 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 }
 .static-fallback .footer-credit-inline a:hover { text-decoration: underline; }
 
-/* Mobile bottom nav */
-.static-fallback .mobile-bottom {
-  display: none;
-  position: fixed;
-  z-index: 100;
-  left: 0; right: 0; bottom: 0;
-  height: var(--bottom-nav-h);
-  background: rgba(255, 255, 255, 0.98);
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid #f2c9d8;
-  box-shadow: 0 -4px 20px rgba(72, 25, 42, 0.06);
-}
-.static-fallback .mobile-bottom a {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  align-items: center;
-  justify-content: center;
-  color: #29171d;
-  text-decoration: none;
-  font-size: 10px;
-  font-weight: 800;
-}
-.static-fallback .mobile-bottom svg { width: 22px; height: 22px; }
-.static-fallback .mobile-bottom .bottom-active { color: var(--pink); }
-
 /* Shared */
 .static-fallback .section-label {
   display: inline-block;
@@ -1041,8 +1014,7 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
     height: clamp(36px, 10vw, 44px);
   }
   .static-fallback .occasion-row::-webkit-scrollbar { display: none; }
-  .static-fallback .mobile-bottom { display: grid; }
-  .static-fallback .site-footer { padding-bottom: calc(var(--bottom-nav-h) + 8px); }
+  .static-fallback .site-footer { padding-bottom: calc(var(--section-y) + 8px); }
   .static-fallback .footer-main { grid-template-columns: 1fr; }
   .static-fallback .footer-columns { grid-template-columns: 1fr 1fr; gap: 16px; }
   .static-fallback .hero-cta-overlay {
@@ -1054,7 +1026,6 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 }
 
 @media (min-width: 701px) {
-  .static-fallback .mobile-bottom { display: none !important; }
   .static-fallback { padding-bottom: 0; }
   .static-fallback .site-footer { padding-bottom: var(--section-y); }
 }
@@ -1070,7 +1041,7 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 .static-fallback.shop-page {
   background: var(--bg, #fff9fb);
   min-height: 100vh;
-  padding-bottom: calc(var(--bottom-nav-h, 64px) + 16px);
+  padding-bottom: 24px;
 }
 
 .nav-cart {
@@ -1274,16 +1245,34 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   gap: 12px;
 }
 
-@media (min-width: 600px) {
-  .shop-product-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
+.shop-featured-row {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 2px 12px;
+  scrollbar-width: thin;
+}
+
+.shop-featured-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.shop-featured-row .shop-product-card {
+  flex: 0 0 min(78vw, 260px);
+  width: min(78vw, 260px);
+  max-width: 260px;
+  scroll-snap-align: start;
+}
+
+.home-featured-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @media (min-width: 900px) {
-  .shop-product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  .home-featured-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

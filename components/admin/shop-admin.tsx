@@ -421,9 +421,8 @@ function ShopProductEditor({
             <label className="admin-field">SEO title<input value={product.seoTitle} onChange={e => onChange({ seoTitle: e.target.value })} /></label>
             <label className="admin-field wide">SEO description<textarea value={product.seoDescription} onChange={e => onChange({ seoDescription: e.target.value })} /></label>
             <label className="admin-check"><input type="checkbox" checked={product.active} onChange={e => onChange({ active: e.target.checked })} /> Активен</label>
-            <label className="admin-check"><input type="checkbox" checked={product.featured} onChange={e => onChange({ featured: e.target.checked })} /> Най-поръчван</label>
+            <label className="admin-check"><input type="checkbox" checked={product.featured} onChange={e => onChange({ featured: e.target.checked })} /> Най-поръчван (начална + лента в магазина)</label>
             <label className="admin-check"><input type="checkbox" checked={product.inStock} onChange={e => onChange({ inStock: e.target.checked })} /> В наличност</label>
-            <label className="admin-check"><input type="checkbox" checked={product.isCustomDesign} onChange={e => onChange({ isCustomDesign: e.target.checked })} /> Индивидуален дизайн</label>
           </div>
 
           <div className="admin-block">

@@ -3,25 +3,52 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ArrowRight, Baby, BriefcaseBusiness, CalendarHeart, Ellipsis, GraduationCap, Heart, Truck } from "lucide-react";
-import type { Product, SiteSettings } from "@/lib/defaults";
+import type { SiteSettings } from "@/lib/defaults";
+import { defaultSettings } from "@/lib/defaults";
 import { SEO_FAQ } from "@/lib/seo";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
-import { ProductCard } from "@/components/shop-ui";
 import { ShopChrome, ShopFooter } from "@/components/shop-chrome";
+import { CatalogProvider, useCatalog } from "@/components/shop/catalog-context";
+import { ShopProductCard } from "@/components/shop/product-card";
 
-type Props = { initial: { settings: SiteSettings; products: Product[] } };
+type Props = { initial: { settings: SiteSettings } };
+
+function HomeFavorites() {
+  const catalog = useCatalog();
+  const featured = catalog.products.filter(p => p.featured && p.active && !p.isCustomDesign);
+
+  if (!catalog.products.length) {
+    return <p className="shop-empty">Зареждане на продукти…</p>;
+  }
+
+  if (!featured.length) {
+    return (
+      <p className="shop-empty">
+        Все още няма отбелязани най-поръчвани.{" "}
+        <a href="/shop">Разгледай магазина</a>
+      </p>
+    );
+  }
+
+  return (
+    <div className="grid home-featured-grid">
+      {featured.map(p => (
+        <ShopProductCard key={p.id} product={p} />
+      ))}
+    </div>
+  );
+}
 
 export default function Storefront({ initial }: Props) {
-  const [content, setContent] = useState(initial);
-  const { settings, products } = content;
+  const [settings, setSettings] = useState(initial.settings);
+
   useEffect(() => {
     let active = true;
-    fetch("/api/content").then(r => r.ok ? r.json() : null).then(data => {
-      if (active && data?.settings && Array.isArray(data?.products)) setContent(data);
+    fetch("/api/content").then(r => (r.ok ? r.json() : null)).then(data => {
+      if (active && data?.settings) setSettings(data.settings);
     }).catch(() => {});
     return () => { active = false; };
   }, []);
-  const favorites = products.slice(0, 3);
 
   const scrollToCategory = (cat: string) => {
     const map: Record<string, string> = {
@@ -77,18 +104,12 @@ export default function Storefront({ initial }: Props) {
 
       <section id="products" className="section products">
         <div className="section-head favorites-title">
-          <h2>Най-любими <Heart fill="currentColor" /></h2>
+          <h2>Най-поръчвани <Heart fill="currentColor" /></h2>
           <a href="/shop" className="view-all-link">Виж всички <ArrowRight /></a>
         </div>
-        <div className="grid">
-          {favorites.map(p => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              onOpen={() => { window.location.href = "/shop"; }}
-            />
-          ))}
-        </div>
+        <CatalogProvider>
+          <HomeFavorites />
+        </CatalogProvider>
       </section>
 
       <section className="story-banner" aria-label="Промо">
@@ -101,9 +122,9 @@ export default function Storefront({ initial }: Props) {
       <section id="how" className="steps-compact">
         <h2>Как се поръчва?</h2>
         <div className="steps-grid">
-          <div className="step-card"><span>1</span><h3>Избери бисквитки</h3><p>Избери продукт и количество — минимум 10 бр.</p></div>
+          <div className="step-card"><span>1</span><h3>Избери бисквитки</h3><p>Избери продукт от магазина и количество — минимум 10 бр.</p></div>
           <div className="step-card"><span>2</span><h3>Опиши желанието</h3><p>Избери форма, добави текст и примерна снимка, ако имаш.</p></div>
-          <div className="step-card"><span>3</span><h3>Изпрати поръчката</h3><p>Само име, имейл и телефон — без регистрация. Ще се свържем с теб.</p></div>
+          <div className="step-card"><span>3</span><h3>Изпрати поръчката</h3><p>Добави в количката и поръчай с име, имейл, телефон и Еконт офис.</p></div>
         </div>
       </section>
 
@@ -112,7 +133,7 @@ export default function Storefront({ initial }: Props) {
           <div className="about-copy">
             <span className="section-label">За Sweet Details</span>
             <h2>Ръчно изработени бисквитки с лично послание</h2>
-            <p>{settings.about}</p>
+            <p>{settings.about || defaultSettings.about}</p>
           </div>
           <div className="info-cards">
             <article className="info-card">

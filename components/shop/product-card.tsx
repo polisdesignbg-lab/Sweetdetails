@@ -10,7 +10,7 @@ export function ShopProductCard({ product, categorySlug }: { product: ShopProduc
   const { categories } = useCatalog();
   const cat = categories.find(c => c.id === product.categoryId);
   const slug = categorySlug || cat?.slug || "shop";
-  const href = product.isCustomDesign ? "/shop/custom" : `/shop/${slug}/${product.slug}`;
+  const href = `/shop/${slug}/${product.slug}`;
   const img = product.images[0] || "/products-showcase.png";
 
   return (
@@ -27,7 +27,7 @@ export function ShopProductCard({ product, categorySlug }: { product: ShopProduc
           <p>{product.shortDescription}</p>
           <div className="shop-product-card-foot">
             <span>{formatEuro(product.pricePerUnit)} / бр.</span>
-            <span className="shop-cta-mini">{product.isCustomDesign ? "Заяви" : "Персонализирай"} <ArrowRight size={14} /></span>
+            <span className="shop-cta-mini">Персонализирай <ArrowRight size={14} /></span>
           </div>
         </div>
       </a>

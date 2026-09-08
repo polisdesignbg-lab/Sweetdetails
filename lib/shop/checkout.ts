@@ -58,8 +58,8 @@ export async function createShopOrder(body: CreateOrderInput) {
   if (quantity < product.minQuantity) {
     return { error: `Минималното количество е ${product.minQuantity} бр.`, status: 400 as const };
   }
-  if (product.isCustomDesign && !customization?.occasion?.trim()) {
-    return { error: "Посочи повода за индивидуалния дизайн.", status: 400 as const };
+  if (product.isCustomDesign) {
+    return { error: "Поръчките са само през магазина от качените продукти.", status: 400 as const };
   }
   if (!customization?.neededByDate) {
     return { error: "Посочи дата, за която са необходими бисквитките.", status: 400 as const };
