@@ -8,11 +8,11 @@
   --page-max: 1180px;
   --page-pad: clamp(16px, 4vw, 40px);
   --section-y: clamp(32px, 5vw, 52px);
-  --header-h: 72px;
+  --header-h: 76px;
   --nav-icon: 24px;
   --nav-hit: 40px;
-  --logo-h: 64px;
-  --logo-max-w: min(220px, 58vw);
+  --logo-h: 72px;
+  --logo-max-w: min(260px, 64vw);
   --cat-circle: clamp(80px, 22vw, 112px);
   --cat-icon: clamp(38px, 10vw, 52px);
   --bottom-nav-h: 64px;
@@ -101,7 +101,7 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   width: auto;
   max-width: var(--logo-max-w);
   height: var(--logo-h);
-  max-height: calc(var(--header-h) - 8px);
+  max-height: calc(var(--header-h) - 4px);
   text-align: center;
   min-width: 0;
   min-height: 0;
@@ -118,7 +118,7 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 }
 .static-fallback .brand-logo img {
   height: var(--logo-h) !important;
-  max-height: calc(var(--header-h) - 8px) !important;
+  max-height: calc(var(--header-h) - 4px) !important;
   max-width: 100% !important;
   width: auto !important;
   display: block;
@@ -1008,11 +1008,11 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 /* Mobile */
 @media (max-width: 700px) {
   :root {
-    --header-h: 64px;
+    --header-h: 68px;
     --nav-icon: 22px;
     --nav-hit: 38px;
-    --logo-h: 56px;
-    --logo-max-w: min(200px, 56vw);
+    --logo-h: 64px;
+    --logo-max-w: min(240px, 62vw);
   }
   .static-fallback .announcement {
     height: 32px;
