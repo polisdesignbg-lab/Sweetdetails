@@ -5,6 +5,7 @@ import { formatEuro } from "@/lib/format";
 type MailEnv = {
   RESEND_API_KEY?: string;
   ORDER_NOTIFY_EMAIL?: string;
+  ORDER_FROM_EMAIL?: string;
 };
 
 function getMailEnv(): MailEnv {
@@ -70,6 +71,9 @@ export async function sendOrderEmails(order: ShopOrder, orderNumber: string) {
   const notifyTo = mailEnv.ORDER_NOTIFY_EMAIL
     || (typeof process !== "undefined" ? process.env.ORDER_NOTIFY_EMAIL : undefined)
     || "sweetdetails.bg@gmail.com";
+  const fromEmail = mailEnv.ORDER_FROM_EMAIL
+    || (typeof process !== "undefined" ? process.env.ORDER_FROM_EMAIL : undefined)
+    || "Sweet Details <onboarding@resend.dev>";
 
   if (!apiKey) {
     console.log("[order-email] skipped (no RESEND_API_KEY). Order:", orderNumber);
@@ -81,14 +85,14 @@ export async function sendOrderEmails(order: ShopOrder, orderNumber: string) {
 
   const payloads = [
     {
-      from: "Sweet Details <onboarding@resend.dev>",
+      from: fromEmail,
       to: [notifyTo],
       subject,
       text,
       reply_to: order.contact.email,
     },
     {
-      from: "Sweet Details <onboarding@resend.dev>",
+      from: fromEmail,
       to: [order.contact.email],
       subject: `Получихме поръчката ви #${orderNumber}`,
       text: [
@@ -102,6 +106,7 @@ export async function sendOrderEmails(order: ShopOrder, orderNumber: string) {
         "",
         "Благодарим ви!",
         "Sweet Details",
+        "sweetdetails.bg@gmail.com",
       ].join("\n"),
     },
   ];

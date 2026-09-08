@@ -11,8 +11,8 @@
   --header-h: 80px;
   --nav-icon: 26px;
   --nav-hit: 44px;
-  --logo-h: clamp(68px, 17vw, 96px);
-  --logo-max-w: min(270px, 65vw);
+  --logo-h: clamp(80px, 19vw, 112px);
+  --logo-max-w: min(320px, 72vw);
   --cat-circle: clamp(80px, 22vw, 112px);
   --cat-icon: clamp(38px, 10vw, 52px);
   --bottom-nav-h: 64px;
@@ -992,8 +992,8 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
     --header-h: 76px;
     --nav-icon: 24px;
     --nav-hit: 40px;
-    --logo-h: clamp(62px, 16vw, 80px);
-    --logo-max-w: min(250px, 62vw);
+    --logo-h: clamp(74px, 18vw, 96px);
+    --logo-max-w: min(290px, 70vw);
   }
   .static-fallback .announcement {
     height: 32px;
