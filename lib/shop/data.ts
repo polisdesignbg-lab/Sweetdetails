@@ -8,10 +8,90 @@ import {
   SHOP_SETTINGS_KEY,
   type ShopSettings,
 } from "./seed";
-import type { ShopCatalog, ShopCategory, ShopOrder, ShopProduct, ShopShape } from "./types";
+import type {
+  OrderContact,
+  OrderCustomization,
+  OrderStatus,
+  ShopCatalog,
+  ShopCategory,
+  ShopOrder,
+  ShopProduct,
+  ShopShape,
+} from "./types";
 
 function parse<T>(raw: string): T {
   return JSON.parse(raw) as T;
+}
+
+const KNOWN_STATUSES = new Set<OrderStatus>([
+  "new",
+  "pending_confirmation",
+  "confirmed",
+  "in_production",
+  "ready",
+  "shipped",
+  "completed",
+  "cancelled",
+]);
+
+function normalizeStatus(status: string | undefined): OrderStatus {
+  if (status && KNOWN_STATUSES.has(status as OrderStatus)) return status as OrderStatus;
+  if (status === "awaiting_payment" || status === "pending") return "pending_confirmation";
+  return "new";
+}
+
+/** Accept current + legacy order JSON shapes from D1. */
+function normalizeOrder(
+  raw: Record<string, unknown>,
+  meta: { id: string; status: string; createdAt: string },
+): ShopOrder {
+  const legacyProduct = raw.product as { title?: string; price?: number } | undefined;
+  const legacyValues = (raw.values as OrderCustomization | undefined) || {};
+  const rawContact = (raw.contact as Record<string, unknown> | undefined) || {};
+  const customization = (raw.customization as OrderCustomization | undefined) || legacyValues || {};
+  const contact: OrderContact = {
+    fullName: String(rawContact.fullName || rawContact.name || "—"),
+    phone: String(rawContact.phone || "—"),
+    email: String(rawContact.email || ""),
+    city: rawContact.city ? String(rawContact.city) : undefined,
+    deliveryMethod: rawContact.deliveryMethod as OrderContact["deliveryMethod"],
+    econtOffice: rawContact.econtOffice ? String(rawContact.econtOffice) : undefined,
+    deliveryNotes: rawContact.deliveryNotes ? String(rawContact.deliveryNotes) : undefined,
+  };
+
+  const items = Array.isArray(raw.items) ? (raw.items as ShopOrder["items"]) : undefined;
+  const productTitle = String(raw.productTitle || legacyProduct?.title || items?.[0]?.productTitle || "Поръчка");
+  const quantity = Number(raw.quantity ?? items?.reduce((s, i) => s + (i.quantity || 0), 0) ?? 0) || 0;
+  const total = Number(raw.total ?? items?.reduce((s, i) => s + (i.lineTotal || 0), 0) ?? 0) || 0;
+  const unitPrice = Number(raw.unitPrice ?? legacyProduct?.price ?? (quantity ? total / quantity : 0)) || 0;
+
+  return {
+    id: meta.id,
+    productId: String(raw.productId || items?.[0]?.productId || ""),
+    productTitle,
+    productSlug: String(raw.productSlug || items?.[0]?.productSlug || ""),
+    categorySlug: raw.categorySlug ? String(raw.categorySlug) : items?.[0]?.categorySlug,
+    shapeId: raw.shapeId ? String(raw.shapeId) : items?.[0]?.shapeId,
+    shapeLabel: raw.shapeLabel ? String(raw.shapeLabel) : items?.[0]?.shapeLabel,
+    shapeAddon: Number(raw.shapeAddon ?? 0) || 0,
+    quantity,
+    unitPrice,
+    total,
+    items,
+    customization,
+    contact,
+    status: normalizeStatus(meta.status || (raw.status as string | undefined)),
+    createdAt: meta.createdAt || String(raw.createdAt || new Date().toISOString()),
+  };
+}
+
+function parseOrderRow(row: { id: string; data: string; status: string; created_at: string }): ShopOrder | null {
+  try {
+    const raw = parse<Record<string, unknown>>(row.data);
+    return normalizeOrder(raw, { id: row.id, status: row.status, createdAt: row.created_at });
+  } catch {
+    return null;
+  }
 }
 
 function parseShopProduct(raw: string): ShopProduct | null {
@@ -191,34 +271,32 @@ export async function getShopCatalog(): Promise<ShopCatalog> {
 }
 
 export async function getOrders(): Promise<ShopOrder[]> {
-  const rows = await env.DB.prepare("SELECT id, data, status, created_at FROM orders ORDER BY created_at DESC").all<{
-    id: string;
-    data: string;
-    status: string;
-    created_at: string;
-  }>();
-  return rows.results.map(r => {
-    const order = parse<ShopOrder>(r.data);
-    order.id = r.id;
-    order.status = r.status as ShopOrder["status"];
-    order.createdAt = r.created_at;
-    return order;
-  });
+  try {
+    const rows = await env.DB.prepare("SELECT id, data, status, created_at FROM orders ORDER BY created_at DESC").all<{
+      id: string;
+      data: string;
+      status: string;
+      created_at: string;
+    }>();
+    return (rows.results || []).map(parseOrderRow).filter((o): o is ShopOrder => o !== null);
+  } catch {
+    return [];
+  }
 }
 
 export async function getOrder(id: string): Promise<ShopOrder | null> {
-  const row = await env.DB.prepare("SELECT id, data, status, created_at FROM orders WHERE id = ?").bind(id).first<{
-    id: string;
-    data: string;
-    status: string;
-    created_at: string;
-  }>();
-  if (!row) return null;
-  const order = parse<ShopOrder>(row.data);
-  order.id = row.id;
-  order.status = row.status as ShopOrder["status"];
-  order.createdAt = row.created_at;
-  return order;
+  try {
+    const row = await env.DB.prepare("SELECT id, data, status, created_at FROM orders WHERE id = ?").bind(id).first<{
+      id: string;
+      data: string;
+      status: string;
+      created_at: string;
+    }>();
+    if (!row) return null;
+    return parseOrderRow(row);
+  } catch {
+    return null;
+  }
 }
 
 export async function saveOrder(order: ShopOrder) {

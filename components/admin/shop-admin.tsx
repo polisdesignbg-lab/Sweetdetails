@@ -309,15 +309,15 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
                 <tbody>
                   {orders.map(o => (
                     <tr key={o.id} className="admin-table-click" onClick={() => setSelectedOrder(o)}>
-                      <td>{o.id.slice(0, 8).toUpperCase()}</td>
-                      <td>{new Date(o.createdAt).toLocaleDateString("bg-BG")}</td>
-                      <td>{o.contact.fullName}</td>
-                      <td>{o.contact.phone}</td>
-                      <td>{o.productTitle}</td>
-                      <td>{o.quantity}</td>
-                      <td>{o.customization.neededByDate || "—"}</td>
-                      <td>{o.total.toFixed(2)} €</td>
-                      <td><span className={`admin-status admin-status-${o.status}`}>{ORDER_STATUS_LABELS[o.status]}</span></td>
+                      <td>{(o.id || "").slice(0, 8).toUpperCase() || "—"}</td>
+                      <td>{o.createdAt ? new Date(o.createdAt).toLocaleDateString("bg-BG") : "—"}</td>
+                      <td>{o.contact?.fullName || "—"}</td>
+                      <td>{o.contact?.phone || "—"}</td>
+                      <td>{o.productTitle || "—"}</td>
+                      <td>{o.quantity ?? "—"}</td>
+                      <td>{o.customization?.neededByDate || "—"}</td>
+                      <td>{Number(o.total || 0).toFixed(2)} €</td>
+                      <td><span className={`admin-status admin-status-${o.status}`}>{ORDER_STATUS_LABELS[o.status] || o.status || "—"}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -571,12 +571,24 @@ function ShapeEditor({ shape, index, open, onToggle, onChange, onDelete, onMove,
 function OrderDetail({ order, onBack, onStatus, busy }: {
   order: ShopOrder; onBack: () => void; onStatus: (id: string, s: ShopOrder["status"]) => void; busy: boolean;
 }) {
-  const c = order.customization;
+  const c = order.customization || {};
+  const contact = order.contact || { fullName: "—", phone: "—", email: "" };
+  const lineItems = order.items?.length
+    ? order.items
+    : [{
+        productTitle: order.productTitle || "Поръчка",
+        quantity: order.quantity || 0,
+        shapeLabel: order.shapeLabel,
+        unitPrice: order.unitPrice || 0,
+        lineTotal: order.total || 0,
+        customization: c,
+      }];
+
   return (
     <div className="admin-card admin-card-body">
       <button type="button" className="admin-back-link" onClick={onBack}>← Назад към поръчките</button>
-      <h2>Поръчка {order.id.slice(0, 8).toUpperCase()}</h2>
-      <p><small>{new Date(order.createdAt).toLocaleString("bg-BG")}</small></p>
+      <h2>Поръчка {(order.id || "").slice(0, 8).toUpperCase()}</h2>
+      <p><small>{order.createdAt ? new Date(order.createdAt).toLocaleString("bg-BG") : "—"}</small></p>
 
       <label className="admin-field">
         Статус
@@ -588,34 +600,27 @@ function OrderDetail({ order, onBack, onStatus, busy }: {
       <div className="admin-order-grid">
         <section>
           <h3>Клиент</h3>
-          <p><strong>{order.contact.fullName}</strong></p>
-          <p>{order.contact.phone}</p>
-          <p>{order.contact.email}</p>
-          {order.contact.city && <p>{order.contact.city}</p>}
-          <p><strong>Еконт офис:</strong> {order.contact.econtOffice || "—"}</p>
-          {order.contact.deliveryNotes && <p>{order.contact.deliveryNotes}</p>}
+          <p><strong>{contact.fullName}</strong></p>
+          <p>{contact.phone}</p>
+          <p>{contact.email}</p>
+          {contact.city && <p>{contact.city}</p>}
+          <p><strong>Еконт офис:</strong> {contact.econtOffice || "—"}</p>
+          {contact.deliveryNotes && <p>{contact.deliveryNotes}</p>}
         </section>
         <section>
           <h3>Продукти</h3>
-          {(order.items?.length ? order.items : [{
-            productTitle: order.productTitle,
-            quantity: order.quantity,
-            shapeLabel: order.shapeLabel,
-            unitPrice: order.unitPrice,
-            lineTotal: order.total,
-            customization: order.customization,
-          }]).map((item, idx) => (
+          {lineItems.map((item, idx) => (
             <div key={idx} style={{ marginBottom: 12 }}>
-              <p><strong>{item.productTitle}</strong></p>
-              <p>Форма: {item.shapeLabel || "—"} · {item.quantity} бр. · {item.lineTotal.toFixed(2)} €</p>
+              <p><strong>{item.productTitle || "—"}</strong></p>
+              <p>Форма: {item.shapeLabel || "—"} · {item.quantity || 0} бр. · {Number(item.lineTotal || 0).toFixed(2)} €</p>
             </div>
           ))}
-          <p><strong>Общо: {order.total.toFixed(2)} €</strong></p>
+          <p><strong>Общо: {Number(order.total || 0).toFixed(2)} €</strong></p>
         </section>
         <section>
           <h3>Персонализация</h3>
-          {(order.items?.length ? order.items : [{ customization: c, productTitle: order.productTitle }]).map((item, idx) => {
-            const custom = item.customization;
+          {lineItems.map((item, idx) => {
+            const custom = item.customization || c || {};
             return (
               <dl className="admin-dl" key={idx} style={{ marginBottom: 16 }}>
                 {order.items && order.items.length > 1 && <div><dt>Продукт</dt><dd>{item.productTitle}</dd></div>}
