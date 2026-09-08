@@ -56,30 +56,27 @@ async function migrateShopDefaults() {
   try {
     const settings = await getShopSettings();
     const version = settings.catalogVersion ?? 0;
-    if (version >= 3) return;
+    if (version >= 4) return;
 
-    if (version < 2) {
-      const productRows = await env.DB.prepare("SELECT id, data FROM products").all<{ id: string; data: string }>();
-      const shapeRows = await env.DB.prepare("SELECT id, data FROM shapes").all<{ id: string; data: string }>();
-      const batch = [
-        ...productRows.results.map(row => {
-          const p = parseShopProduct(row.data);
-          if (!p) return null;
-          p.pricePerUnit = 2;
-          p.priceTiers = [];
-          p.packagingInfo = SHOP_PACKAGING_INFO;
-          return env.DB.prepare("UPDATE products SET data = ? WHERE id = ?").bind(JSON.stringify(p), row.id);
-        }).filter(Boolean) as ReturnType<typeof env.DB.prepare>[],
-        ...shapeRows.results.map(row => {
-          const s = parse<ShopShape>(row.data);
-          s.addonPrice = 0;
-          return env.DB.prepare("UPDATE shapes SET data = ? WHERE id = ?").bind(JSON.stringify(s), row.id);
-        }),
-      ];
-      if (batch.length) await env.DB.batch(batch);
-    }
-
-    await saveShopSettings({ ...settings, minLeadDays: 14, catalogVersion: 3 });
+    const productRows = await env.DB.prepare("SELECT id, data FROM products").all<{ id: string; data: string }>();
+    const shapeRows = await env.DB.prepare("SELECT id, data FROM shapes").all<{ id: string; data: string }>();
+    const batch = [
+      ...productRows.results.map(row => {
+        const p = parseShopProduct(row.data);
+        if (!p) return null;
+        p.pricePerUnit = 2;
+        p.priceTiers = [];
+        p.packagingInfo = SHOP_PACKAGING_INFO;
+        return env.DB.prepare("UPDATE products SET data = ? WHERE id = ?").bind(JSON.stringify(p), row.id);
+      }).filter(Boolean) as ReturnType<typeof env.DB.prepare>[],
+      ...shapeRows.results.map(row => {
+        const s = parse<ShopShape>(row.data);
+        s.addonPrice = 0;
+        return env.DB.prepare("UPDATE shapes SET data = ? WHERE id = ?").bind(JSON.stringify(s), row.id);
+      }),
+    ];
+    if (batch.length) await env.DB.batch(batch);
+    await saveShopSettings({ ...settings, minLeadDays: 14, catalogVersion: 4 });
   } catch (err) {
     console.error("[shop] migrateShopDefaults failed:", err);
   }
