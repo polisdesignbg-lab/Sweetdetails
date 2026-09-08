@@ -633,6 +633,83 @@
   margin-top: 16px;
 }
 
+.admin-order-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.admin-order-block {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f0e4e8;
+}
+
+.admin-order-block h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.admin-order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-order-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #f0e4e8;
+  border-radius: 14px;
+  background: #fffafc;
+}
+
+.admin-order-item-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #f7eef2;
+}
+
+.admin-order-item-img-empty {
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: #9a8490;
+  text-align: center;
+}
+
+.admin-order-item-body h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.admin-order-item-body p {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+
+.admin-order-total {
+  margin: 14px 0 0;
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  .admin-order-item {
+    grid-template-columns: 1fr;
+  }
+  .admin-order-item-img,
+  .admin-order-item-img-empty {
+    width: 100%;
+    height: 180px;
+  }
+}
+
 .admin-dl > div {
   display: grid;
   grid-template-columns: 140px 1fr;
@@ -642,7 +719,7 @@
 }
 
 .admin-dl dt { color: #9a8490; }
-.admin-dl dd { margin: 0; }
+.admin-dl dd { margin: 0; font-weight: 600; color: #321a23; }
 
 .admin-preview-thumb {
   width: 80px;
