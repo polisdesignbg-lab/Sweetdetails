@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import type { Product, ProductOption, ProductShape, SiteSettings } from "@/lib/defaults";
 import { adminFetch, clearAdminToken, getStoredAdminToken, storeAdminToken } from "@/lib/admin-client";
+import { ShopAdminPanel } from "@/components/admin/shop-admin";
 
 type Props = {
   authorized: boolean;
@@ -33,7 +34,7 @@ export default function AdminPanel({ authorized, initial }: Props) {
   const [busy, setBusy] = useState(false);
   const [settings, setSettings] = useState<SiteSettings | undefined>(initial?.settings);
   const [products, setProducts] = useState<Product[]>(initial?.products ?? []);
-  const [tab, setTab] = useState<"products" | "settings">("products");
+  const [tab, setTab] = useState<"shop" | "products" | "settings">("shop");
   const [open, setOpen] = useState("");
   const [toast, setToast] = useState<Toast | null>(null);
 
@@ -184,13 +185,17 @@ export default function AdminPanel({ authorized, initial }: Props) {
             <small>Администрация</small>
           </div>
         </div>
-        <a className="admin-nav-link admin-nav-store" href="/" target="_blank" rel="noopener noreferrer">
+        <a className="admin-nav-link admin-nav-store" href="/shop" target="_blank" rel="noopener noreferrer">
           <Store size={18} />
           <span className="label">Онлайн магазин</span>
         </a>
-        <button className={`admin-nav-btn ${tab === "products" ? "active" : ""}`} type="button" onClick={() => setTab("products")}>
+        <button className={`admin-nav-btn ${tab === "shop" ? "active" : ""}`} type="button" onClick={() => setTab("shop")}>
           <ShoppingBag size={18} />
-          <span className="label">Продукти</span>
+          <span className="label">Магазин</span>
+        </button>
+        <button className={`admin-nav-btn ${tab === "products" ? "active" : ""}`} type="button" onClick={() => setTab("products")}>
+          <Store size={18} />
+          <span className="label">Начална страница</span>
         </button>
         <button className={`admin-nav-btn ${tab === "settings" ? "active" : ""}`} type="button" onClick={() => setTab("settings")}>
           <Settings size={18} />
@@ -206,23 +211,27 @@ export default function AdminPanel({ authorized, initial }: Props) {
         <header className="admin-topbar">
           <div>
             <span>Управление</span>
-            <h1>{tab === "products" ? "Продукти" : "Настройки на сайта"}</h1>
+            <h1>{tab === "shop" ? "Магазин" : tab === "products" ? "Начална страница" : "Настройки на сайта"}</h1>
           </div>
           <div className="admin-topbar-actions">
-            <a className="admin-btn admin-btn-secondary admin-btn-sm" href="/" target="_blank" rel="noopener noreferrer">
+            <a className="admin-btn admin-btn-secondary admin-btn-sm" href="/shop" target="_blank" rel="noopener noreferrer">
               <ExternalLink size={16} />
-              <span className="label">Преглед</span>
+              <span className="label">Магазин</span>
             </a>
+            {tab !== "shop" && (
             <button className="admin-btn admin-btn-primary admin-btn-sm admin-btn-save" disabled={busy} type="button" onClick={save}>
               <Save size={16} />
               <span className="label">{busy ? "Запазване…" : "Запази"}</span>
             </button>
+            )}
           </div>
         </header>
 
         {toast && <div className={`admin-toast ${toast.type}`}>{toast.text}</div>}
 
-        {tab === "products" ? (
+        {tab === "shop" ? (
+          <ShopAdminPanel notify={notify} busy={busy} setBusy={setBusy} />
+        ) : tab === "products" ? (
           <div className="admin-content">
             <div className="admin-section-head">
               <div>

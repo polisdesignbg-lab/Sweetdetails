@@ -1,7 +1,3 @@
-// Intentionally empty by default.
-// Add Drizzle tables here when the site actually needs a database.
-// See examples/d1/db/schema.ts for an opt-in example.
-export {};
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const settings = sqliteTable("settings", {
@@ -9,10 +5,27 @@ export const settings = sqliteTable("settings", {
   data: text("data").notNull(),
 });
 
-export const products = sqliteTable("products", {
+export const categories = sqliteTable("categories", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull(),
+  data: text("data").notNull(),
+  position: integer("position").notNull().default(0),
+  active: integer("active").notNull().default(1),
+});
+
+export const shapes = sqliteTable("shapes", {
   id: text("id").primaryKey(),
   data: text("data").notNull(),
   position: integer("position").notNull().default(0),
+  active: integer("active").notNull().default(1),
+});
+
+export const products = sqliteTable("products", {
+  id: text("id").primaryKey(),
+  slug: text("slug"),
+  data: text("data").notNull(),
+  position: integer("position").notNull().default(0),
+  active: integer("active").notNull().default(1),
 });
 
 export const orders = sqliteTable("orders", {

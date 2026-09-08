@@ -1,12 +1,74 @@
-import { env } from "cloudflare:workers";
+import { createShopOrder } from "@/lib/shop/checkout";
+import type { OrderContact, OrderCustomization, ShopProduct, ShopShape } from "@/lib/shop/types";
 
-export async function POST(request:Request){
- const order=await request.json() as Record<string,any>;const id=crypto.randomUUID();
- if(!order.product?.title||!order.contact?.name||!order.contact?.email||!order.contact?.phone||Number(order.quantity)<10)return Response.json({error:"Попълни име, имейл, телефон и минимум 10 броя."},{status:400});
- await env.DB.prepare("INSERT INTO orders (id,data,status,created_at) VALUES (?,?,?,?)").bind(id,JSON.stringify(order),"awaiting_payment",new Date().toISOString()).run();
- const stripe=process.env.STRIPE_SECRET_KEY;
- if(!stripe)return Response.json({message:`Поръчката е записана с номер ${id.slice(0,8).toUpperCase()}. Онлайн плащането ще бъде активно след свързване на Stripe.`});
- const origin=new URL(request.url).origin;const amount=Math.max(100,Math.round(Number(order.total)*100));
- const form=new URLSearchParams();form.set("mode","payment");form.set("success_url",`${origin}/?payment=success&order=${id}`);form.set("cancel_url",`${origin}/?payment=cancelled`);form.set("customer_email",String(order.contact.email));form.set("client_reference_id",id);form.set("line_items[0][price_data][currency]","eur");form.set("line_items[0][price_data][unit_amount]",String(amount));form.set("line_items[0][price_data][product_data][name]",`${order.product.title} × ${order.quantity}`);form.set("line_items[0][quantity]","1");form.set("metadata[order_id]",id);
- const r=await fetch("https://api.stripe.com/v1/checkout/sessions",{method:"POST",headers:{authorization:`Bearer ${stripe}`,"content-type":"application/x-www-form-urlencoded"},body:form});const data=await r.json() as {url?:string;error?:{message?:string}};if(!r.ok)return Response.json({error:data.error?.message||"stripe error"},{status:502});return Response.json({url:data.url});
+/** Legacy checkout — forwards to shop order (no Stripe). */
+export async function POST(request: Request) {
+  const body = (await request.json()) as Record<string, unknown>;
+
+  if ((body.product as ShopProduct | undefined)?.slug) {
+    const result = await createShopOrder(body as {
+      product: ShopProduct;
+      shape?: ShopShape;
+      quantity: number;
+      customization: OrderCustomization;
+      contact: OrderContact;
+      categorySlug?: string;
+    });
+    if ("error" in result) return Response.json({ error: result.error }, { status: result.status });
+    return Response.json(result);
+  }
+
+  const legacy = body as {
+    product?: { id: string; title: string; price: number; minQuantity?: number };
+    quantity?: number;
+    values?: Record<string, unknown>;
+    contact?: { name: string; email: string; phone: string; city?: string };
+  };
+
+  if (!legacy.product?.title || !legacy.contact?.name) {
+    return Response.json({ error: "Невалидна поръчка." }, { status: 400 });
+  }
+
+  const result = await createShopOrder({
+    product: {
+      id: legacy.product.id,
+      slug: legacy.product.id,
+      title: legacy.product.title,
+      shortDescription: "",
+      description: "",
+      categoryId: "",
+      images: [],
+      pricePerUnit: legacy.product.price,
+      priceTiers: [],
+      minQuantity: legacy.product.minQuantity ?? 10,
+      quantityStep: 1,
+      shapeIds: [],
+      themeColors: [],
+      sizeInfo: "",
+      packagingInfo: "",
+      productInfo: "",
+      featured: false,
+      active: true,
+      inStock: true,
+      isCustomDesign: false,
+      seoTitle: legacy.product.title,
+      seoDescription: "",
+      position: 0,
+    },
+    quantity: Number(legacy.quantity) || 10,
+    customization: {
+      inscription: String(legacy.values?.printText || ""),
+      notes: String(legacy.values?.brief || ""),
+      neededByDate: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+    },
+    contact: {
+      fullName: legacy.contact.name,
+      email: legacy.contact.email,
+      phone: legacy.contact.phone,
+      city: legacy.contact.city || "—",
+    },
+  });
+
+  if ("error" in result) return Response.json({ error: result.error }, { status: result.status });
+  return Response.json({ message: `Поръчката е записана с номер ${result.orderNumber}. Ще се свържем с теб скоро.` });
 }

@@ -8,6 +8,13 @@
       "when": 1788606167986,
       "tag": "0000_zippy_abomination",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1788700000000,
+      "tag": "0001_shop_catalog",
+      "breakpoints": true
     }
   ]
 }

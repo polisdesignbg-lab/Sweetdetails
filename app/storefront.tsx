@@ -25,7 +25,15 @@ export default function Storefront({ initial }: Props) {
   const favorites = products.slice(0, 3);
 
   const scrollToCategory = (cat: string) => {
-    window.location.href = `/products?cat=${encodeURIComponent(cat)}`;
+    const map: Record<string, string> = {
+      "Кръщене": "krashtene",
+      "Рожден ден": "rozhden-den",
+      "Сватба": "svatba",
+      "Завършване": "detska-gradina-uchilishte",
+      "Фирмени": "firmeni-biskvitki",
+    };
+    const slug = map[cat];
+    window.location.href = slug ? `/shop/${slug}` : "/shop";
   };
 
   return (
@@ -44,7 +52,7 @@ export default function Storefront({ initial }: Props) {
             priority
             className="hero-banner-img"
           />
-          <a href="/products" className="hero-cta-overlay" aria-label="Разгледай бисквитките">РАЗГЛЕДАЙ</a>
+          <a href="/shop" className="hero-cta-overlay" aria-label="Разгледай бисквитките">РАЗГЛЕДАЙ</a>
         </div>
         <div className="hero-dots" aria-hidden="true"><span className="active" /><span /><span /></div>
       </section>
@@ -71,7 +79,7 @@ export default function Storefront({ initial }: Props) {
       <section id="products" className="section products">
         <div className="section-head favorites-title">
           <h2>Най-любими <Heart fill="currentColor" /></h2>
-          <a href="/products" className="view-all-link">Виж всички <ArrowRight /></a>
+          <a href="/shop" className="view-all-link">Виж всички <ArrowRight /></a>
         </div>
         <div className="grid">
           {favorites.map(p => <ProductCard product={p} key={p.id} onOpen={() => setSelected(p)} />)}
