@@ -18,11 +18,35 @@ function withNoStoreHtml(response: Response): Response {
   headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
   headers.set("CDN-Cache-Control", "no-store");
   headers.set("Pragma", "no-cache");
-  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+  headers.delete("ETag");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+function maybeRedirect(request: Request): Response | null {
+  const url = new URL(request.url);
+  let changed = false;
+
+  if (url.protocol === "http:") {
+    url.protocol = "https:";
+    changed = true;
+  }
+  if (url.hostname === "www.sweetdetails.ink") {
+    url.hostname = "sweetdetails.ink";
+    changed = true;
+  }
+  if (!changed) return null;
+  return Response.redirect(url.toString(), 301);
 }
 
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    const redirect = maybeRedirect(request);
+    if (redirect) return redirect;
+
     try {
       const response = await handler.fetch(request, env, ctx);
       return withNoStoreHtml(response);

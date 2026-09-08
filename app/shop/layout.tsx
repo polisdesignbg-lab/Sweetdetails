@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Поръчай персонализирани бисквитки — магазин",
   description: "Избери дизайн по повод — кръщене, рожден ден, сватба и други. Персонализирай надпис, форма и количество.",

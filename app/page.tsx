@@ -2,7 +2,8 @@ import { defaultProducts, defaultSettings } from "@/lib/defaults";
 import { buildStructuredData, jsonLdScript } from "@/lib/seo";
 import Storefront from "./storefront";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default function Home() {
   const content = { settings: defaultSettings, products: defaultProducts };
