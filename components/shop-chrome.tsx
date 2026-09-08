@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { CalendarClock, Facebook, Instagram, Menu, ShoppingCart, Truck, X } from "lucide-react";
+import { CalendarClock, Menu, ShoppingCart, Truck, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/defaults";
 import { FREE_DELIVERY_EUR } from "@/lib/format";
 import { useCart } from "@/components/shop/cart-context";
@@ -11,6 +11,24 @@ type Props = {
   settings: SiteSettings;
   activeNav?: "home" | "shop" | "products" | "order" | "contact" | "cart";
 };
+
+function FacebookIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M14 8.5h2.5V5.2c-.4-.1-1.8-.2-3.4-.2-3.4 0-5.7 2-5.7 5.7V13H5v3.8h2.4V24h3.8v-7.2H14l.6-3.8h-3.2v-2.1c0-1.1.3-1.9 1.6-1.9z" />
+    </svg>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
 
 export function ShopChrome({ settings }: Props) {
   const [menu, setMenu] = useState(false);
@@ -81,20 +99,20 @@ export function ShopFooter({ settings }: { settings: SiteSettings }) {
               <div className="footer-socials">
                 {fb ? (
                   <a href={fb} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="footer-social-link">
-                    <Facebook size={20} strokeWidth={2} />
+                    <FacebookIcon />
                   </a>
                 ) : (
                   <span className="footer-social-link footer-social-link-muted" title="Добави Facebook линк от админ → Настройки" aria-label="Facebook">
-                    <Facebook size={20} strokeWidth={2} />
+                    <FacebookIcon />
                   </span>
                 )}
                 {ig ? (
                   <a href={ig} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="footer-social-link">
-                    <Instagram size={20} strokeWidth={2} />
+                    <InstagramIcon />
                   </a>
                 ) : (
                   <span className="footer-social-link footer-social-link-muted" title="Добави Instagram линк от админ → Настройки" aria-label="Instagram">
-                    <Instagram size={20} strokeWidth={2} />
+                    <InstagramIcon />
                   </span>
                 )}
               </div>
