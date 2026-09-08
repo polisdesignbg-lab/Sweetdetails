@@ -1284,8 +1284,8 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   height: 6px;
 }
 
-.shop-featured-row .shop-product-card,
-.shop-featured-row .featured-snap-card {
+/* Homepage: larger featured cards (~2 visible) */
+.home-featured-row .featured-snap-card {
   flex: 0 0 calc(50% - 7px);
   width: calc(50% - 7px);
   max-width: none;
@@ -1293,11 +1293,29 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
 }
 
 @media (max-width: 520px) {
-  .shop-featured-row .shop-product-card,
-  .shop-featured-row .featured-snap-card {
+  .home-featured-row .featured-snap-card {
     flex: 0 0 calc(70% - 7px);
     width: calc(70% - 7px);
   }
+}
+
+/* Shop: smaller than "all products" grid cards */
+.shop-page .shop-featured-row {
+  gap: 10px;
+}
+
+.shop-page .shop-featured-row .featured-snap-card {
+  flex: 0 0 min(148px, 36vw);
+  width: min(148px, 36vw);
+  max-width: 160px;
+  scroll-snap-align: start;
+  border-radius: 12px;
+}
+
+.shop-page .shop-featured-row .featured-snap-card-cat {
+  padding: 6px 8px 8px;
+  font-size: 11px;
+  line-height: 1.25;
 }
 
 .featured-snap-card {
@@ -1330,10 +1348,6 @@ body { margin: 0; background: #fff; color: var(--ink); font-family: 'Nunito', sa
   font-weight: 800;
   color: var(--pink, #e92e72);
   text-align: center;
-}
-
-.home-featured-grid {
-  display: none;
 }
 
 .shop-product-card {
