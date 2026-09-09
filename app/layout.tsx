@@ -88,6 +88,7 @@ export const metadata: Metadata = {
     "geo.region": "BG",
     "geo.placename": "Bulgaria",
     "content-language": "bg",
+    google: "notranslate",
   },
 };
 
@@ -97,12 +98,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="bg">
+    <html lang="bg" translate="no">
       <head>
+        <meta httpEquiv="content-language" content="bg" />
+        <meta name="google" content="notranslate" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="antialiased"><AppProviders>{children}</AppProviders></body>
+      <body className="antialiased notranslate" translate="no">
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }
