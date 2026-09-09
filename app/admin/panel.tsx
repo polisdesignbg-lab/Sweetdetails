@@ -19,6 +19,7 @@ import {
 import type { Product, ProductOption, ProductShape, SiteSettings } from "@/lib/defaults";
 import { adminFetch, clearAdminToken, getStoredAdminToken, storeAdminToken } from "@/lib/admin-client";
 import { ShopAdminPanel } from "@/components/admin/shop-admin";
+import { AdminPushEnable } from "@/components/admin/push-enable";
 
 type Props = {
   authorized: boolean;
@@ -228,6 +229,10 @@ export default function AdminPanel({ authorized, initial }: Props) {
         </header>
 
         {toast && <div className={`admin-toast ${toast.type}`}>{toast.text}</div>}
+
+        <div className="admin-content" style={{ paddingBottom: 0 }}>
+          <AdminPushEnable notify={notify} />
+        </div>
 
         {tab === "shop" ? (
           <ShopAdminPanel notify={notify} busy={busy} setBusy={setBusy} />

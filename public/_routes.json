@@ -9,6 +9,8 @@
     "/sitemap.xml",
     "/robots.txt",
     "/manifest.webmanifest",
+    "/admin-manifest.webmanifest",
+    "/sw.js",
     "/favicon.svg",
     "/*.png",
     "/*.jpg",

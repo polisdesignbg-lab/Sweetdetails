@@ -106,6 +106,12 @@ export async function createShopOrder(body: CreateOrderInput) {
   await saveOrder(order);
   const orderNumber = id.slice(0, 8).toUpperCase();
   await sendOrderEmails(order, orderNumber);
+  try {
+    const { sendOrderPush } = await import("@/lib/shop/push");
+    await sendOrderPush(order, orderNumber);
+  } catch (err) {
+    console.error("[push] failed", err);
+  }
 
   return {
     ok: true as const,
@@ -177,6 +183,12 @@ export async function createCartOrder(body: CreateCartOrderInput) {
   await saveOrder(order);
   const orderNumber = id.slice(0, 8).toUpperCase();
   await sendOrderEmails(order, orderNumber);
+  try {
+    const { sendOrderPush } = await import("@/lib/shop/push");
+    await sendOrderPush(order, orderNumber);
+  } catch (err) {
+    console.error("[push] failed", err);
+  }
 
   return {
     ok: true as const,
