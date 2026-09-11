@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -67,13 +67,13 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
         body: JSON.stringify(payload),
       });
       if (!r.ok) {
-        notify("err", "ÐÐµ ÑƒÑÐ¿ÑÑ…Ð¼Ðµ Ð´Ð° Ð·Ð°Ð¿Ð°Ð·Ð¸Ð¼ Ð¿Ñ€Ð¾Ð¼ÐµÐ½Ð¸Ñ‚Ðµ.");
+        notify("err", "Не успяхме да запазим промените.");
         return false;
       }
-      notify("ok", "Ð—Ð°Ð¿Ð°Ð·ÐµÐ½Ð¾ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾.");
+      notify("ok", "Запазено успешно.");
       return true;
     } catch {
-      notify("err", "Ð“Ñ€ÐµÑˆÐºÐ° Ð¿Ñ€Ð¸ Ð·Ð°Ð¿Ð°Ð·Ð²Ð°Ð½Ðµ.");
+      notify("err", "Грешка при запазване.");
       return false;
     } finally {
       setBusy(false);
@@ -94,36 +94,36 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
         body: JSON.stringify({ id, status }),
       });
       if (!r.ok) {
-        notify("err", "ÐÐµ ÑƒÑÐ¿ÑÑ…Ð¼Ðµ Ð´Ð° Ð¾Ð±Ð½Ð¾Ð²Ð¸Ð¼ ÑÑ‚Ð°Ñ‚ÑƒÑÐ°.");
+        notify("err", "Не успяхме да обновим статуса.");
         return;
       }
       setOrders(orders.map(o => (o.id === id ? { ...o, status } : o)));
       if (selectedOrder?.id === id) setSelectedOrder({ ...selectedOrder, status });
-      notify("ok", "Ð¡Ñ‚Ð°Ñ‚ÑƒÑÑŠÑ‚ Ðµ Ð¾Ð±Ð½Ð¾Ð²ÐµÐ½.");
+      notify("ok", "Статусът е обновен.");
     } finally {
       setBusy(false);
     }
   };
 
   const titles: Record<SubTab, string> = {
-    products: "ÐŸÑ€Ð¾Ð´ÑƒÐºÑ‚Ð¸ Ð² Ð¼Ð°Ð³Ð°Ð·Ð¸Ð½Ð°",
-    categories: "ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ Ð¿Ð¾ Ð¿Ð¾Ð²Ð¾Ð´",
-    shapes: "Ð¤Ð¾Ñ€Ð¼Ð¸ Ð½Ð° Ð±Ð¸ÑÐºÐ²Ð¸Ñ‚ÐºÐ¸",
-    orders: "ÐŸÐ¾Ñ€ÑŠÑ‡ÐºÐ¸",
+    products: "Продукти в магазина",
+    categories: "Категории по повод",
+    shapes: "Форми на бисквитки",
+    orders: "Поръчки",
   };
 
   if (!loaded) {
-    return <div className="admin-content"><p>Ð—Ð°Ñ€ÐµÐ¶Ð´Ð°Ð½Ðµ Ð½Ð° Ð¼Ð°Ð³Ð°Ð·Ð¸Ð½Ð°â€¦</p></div>;
+    return <div className="admin-content"><p>Зареждане на магазина…</p></div>;
   }
 
   return (
     <>
       <div className="admin-subtabs">
         {([
-          ["products", ShoppingCart, "ÐŸÑ€Ð¾Ð´ÑƒÐºÑ‚Ð¸"],
-          ["categories", Tag, "ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸"],
-          ["shapes", Shapes, "Ð¤Ð¾Ñ€Ð¼Ð¸"],
-          ["orders", Package, "ÐŸÐ¾Ñ€ÑŠÑ‡ÐºÐ¸"],
+          ["products", ShoppingCart, "Продукти"],
+          ["categories", Tag, "Категории"],
+          ["shapes", Shapes, "Форми"],
+          ["orders", Package, "Поръчки"],
         ] as const).map(([key, Icon, label]) => (
           <button key={key} type="button" className={subTab === key ? "active" : ""} onClick={() => { setSubTab(key); setOpen(""); setSelectedOrder(null); }}>
             <Icon size={16} /> {label}
@@ -138,10 +138,10 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
         <div className="admin-section-head">
           <div>
             <h2>{titles[subTab]}</h2>
-            {subTab === "products" && <p>Ð£Ð¿Ñ€Ð°Ð²Ð»ÑÐ²Ð°Ð¹ Ð´Ð¸Ð·Ð°Ð¹Ð½Ð¸, Ñ†ÐµÐ½Ð¸, ÑÐ½Ð¸Ð¼ÐºÐ¸ Ð¸ SEO.</p>}
-            {subTab === "categories" && <p>ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ Ð¿Ð¾ Ð¿Ð¾Ð²Ð¾Ð´ â€” Ð¿Ð¾ÐºÐ°Ð·Ð²Ð°Ñ‚ ÑÐµ Ð½Ð° /shop.</p>}
-            {subTab === "shapes" && <p>Ð¤Ð¾Ñ€Ð¼Ð¸, ÐºÐ¾Ð¸Ñ‚Ð¾ ÐºÐ»Ð¸ÐµÐ½Ñ‚ÑŠÑ‚ Ð¸Ð·Ð±Ð¸Ñ€Ð° Ð½Ð° Ð¿Ñ€Ð¾Ð´ÑƒÐºÑ‚Ð¾Ð²Ð°Ñ‚Ð° ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ð°.</p>}
-            {subTab === "orders" && <p>Ð’ÑÐ¸Ñ‡ÐºÐ¸ Ð·Ð°ÑÐ²ÐµÐ½Ð¸ Ð¿Ð¾Ñ€ÑŠÑ‡ÐºÐ¸ Ð±ÐµÐ· Ð¾Ð½Ð»Ð°Ð¹Ð½ Ð¿Ð»Ð°Ñ‰Ð°Ð½Ðµ.</p>}
+            {subTab === "products" && <p>Управлявай дизайни, цени, снимки и SEO.</p>}
+            {subTab === "categories" && <p>Категории по повод — показват се на /shop.</p>}
+            {subTab === "shapes" && <p>Форми, които клиентът избира на продуктовата страница.</p>}
+            {subTab === "orders" && <p>Всички заявени поръчки без онлайн плащане.</p>}
           </div>
           {subTab === "products" && (
             <div className="admin-inline-actions">
@@ -149,7 +149,7 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
                 const p: ShopProduct = {
                   id: crypto.randomUUID(),
                   slug: "nov-produkt",
-                  title: "ÐÐ¾Ð² Ð¿Ñ€Ð¾Ð´ÑƒÐºÑ‚",
+                  title: "Нов продукт",
                   shortDescription: "",
                   description: "",
                   categoryId: categories[0]?.id || "",
@@ -160,7 +160,7 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
                   quantityStep: 1,
                   shapeIds: shapes.filter(s => s.active).map(s => s.id),
                   themeColors: [...DEFAULT_THEME_COLORS],
-                  sizeInfo: "ÐŸÑ€Ð¸Ð±Ð»Ð¸Ð·Ð¸Ñ‚ÐµÐ»Ð½Ð¾ 6â€“7 ÑÐ¼.",
+                  sizeInfo: "Приблизително 6–7 см.",
                   packagingInfo: "",
                   productInfo: "",
                   featured: false,
@@ -174,10 +174,10 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
                 setProducts([...products, p]);
                 setOpen(p.id);
               }}>
-                <Plus size={16} /> ÐÐ¾Ð² Ð¿Ñ€Ð¾Ð´ÑƒÐºÑ‚
+                <Plus size={16} /> Нов продукт
               </button>
               <button className="admin-btn admin-btn-primary admin-btn-sm" disabled={busy} type="button" onClick={saveProducts}>
-                <Save size={16} /> Ð—Ð°Ð¿Ð°Ð·Ð¸
+                <Save size={16} /> Запази
               </button>
             </div>
           )}
@@ -187,7 +187,7 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
                 const c: ShopCategory = {
                   id: crypto.randomUUID(),
                   slug: "nova-kategoriya",
-                  name: "ÐÐ¾Ð²Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ",
+                  name: "Нова категория",
                   description: "",
                   image: "/shapes/circle.svg",
                   active: true,
@@ -196,10 +196,10 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
                 setCategories([...categories, c]);
                 setOpen(c.id);
               }}>
-                <Plus size={16} /> ÐÐ¾Ð²Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ
+                <Plus size={16} /> Нова категория
               </button>
               <button className="admin-btn admin-btn-primary admin-btn-sm" disabled={busy} type="button" onClick={saveCategories}>
-                <Save size={16} /> Ð—Ð°Ð¿Ð°Ð·Ð¸
+                <Save size={16} /> Запази
               </button>
             </div>
           )}
@@ -208,7 +208,7 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
               <button className="admin-btn admin-btn-secondary admin-btn-sm" type="button" onClick={() => {
                 const s: ShopShape = {
                   id: crypto.randomUUID(),
-                  label: "ÐÐ¾Ð²Ð° Ñ„Ð¾Ñ€Ð¼Ð°",
+                  label: "Нова форма",
                   image: "/shapes/circle.svg",
                   addonPrice: 0,
                   active: true,
@@ -217,10 +217,10 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
                 setShapes([...shapes, s]);
                 setOpen(s.id);
               }}>
-                <Plus size={16} /> ÐÐ¾Ð²Ð° Ñ„Ð¾Ñ€Ð¼Ð°
+                <Plus size={16} /> Нова форма
               </button>
               <button className="admin-btn admin-btn-primary admin-btn-sm" disabled={busy} type="button" onClick={saveShapes}>
-                <Save size={16} /> Ð—Ð°Ð¿Ð°Ð·Ð¸
+                <Save size={16} /> Запази
               </button>
             </div>
           )}
@@ -297,46 +297,46 @@ export function ShopAdminPanel({ notify, busy, setBusy }: Props) {
                 <thead>
                   <tr>
                     <th>â„–</th>
-                    <th>Ð”Ð°Ñ‚Ð°</th>
-                    <th>ÐšÐ»Ð¸ÐµÐ½Ñ‚</th>
-                    <th>Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½</th>
-                    <th>ÐŸÑ€Ð¾Ð´ÑƒÐºÑ‚</th>
-                    <th>ÐšÐ¾Ð».</th>
-                    <th>Ð“Ð¾Ñ‚Ð¾Ð² Ð´Ð¾</th>
-                    <th>Ð¡ÑƒÐ¼Ð°</th>
-                    <th>Ð¡Ñ‚Ð°Ñ‚ÑƒÑ</th>
+                    <th>Дата</th>
+                    <th>Клиент</th>
+                    <th>Телефон</th>
+                    <th>Продукт</th>
+                    <th>Кол.</th>
+                    <th>Готов до</th>
+                    <th>Сума</th>
+                    <th>Статус</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orders.map(o => (
                     <tr key={o.id} className="admin-table-click" onClick={() => setSelectedOrder(o)}>
-                      <td>{(o.id || "").slice(0, 8).toUpperCase() || "â€”"}</td>
-                      <td>{o.createdAt ? new Date(o.createdAt).toLocaleDateString("bg-BG") : "â€”"}</td>
-                      <td>{o.contact?.fullName || "â€”"}</td>
-                      <td>{o.contact?.phone || "â€”"}</td>
-                      <td>{o.productTitle || "â€”"}</td>
-                      <td>{o.quantity ?? "â€”"}</td>
-                      <td>{o.customization?.neededByDate || "â€”"}</td>
+                      <td>{(o.id || "").slice(0, 8).toUpperCase() || "—"}</td>
+                      <td>{o.createdAt ? new Date(o.createdAt).toLocaleDateString("bg-BG") : "—"}</td>
+                      <td>{o.contact?.fullName || "—"}</td>
+                      <td>{o.contact?.phone || "—"}</td>
+                      <td>{o.productTitle || "—"}</td>
+                      <td>{o.quantity ?? "—"}</td>
+                      <td>{o.customization?.neededByDate || "—"}</td>
                       <td>{Number(o.total || 0).toFixed(2)} â‚¬</td>
-                      <td><span className={`admin-status admin-status-${o.status}`}>{ORDER_STATUS_LABELS[o.status] || o.status || "â€”"}</span></td>
+                      <td><span className={`admin-status admin-status-${o.status}`}>{ORDER_STATUS_LABELS[o.status] || o.status || "—"}</span></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {!orders.length && <p className="admin-empty">ÐÑÐ¼Ð° Ð¿Ð¾Ñ€ÑŠÑ‡ÐºÐ¸ Ð²ÑÐµ Ð¾Ñ‰Ðµ.</p>}
+              {!orders.length && <p className="admin-empty">Няма поръчки все още.</p>}
             </div>
           )
         )}
 
         {subTab === "products" && (
           <div className="admin-card admin-card-body" style={{ marginTop: 16 }}>
-            <h3>ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð½Ð° Ð¼Ð°Ð³Ð°Ð·Ð¸Ð½Ð°</h3>
+            <h3>Настройки на магазина</h3>
             <label className="admin-field">
-              ÐœÐ¸Ð½Ð¸Ð¼Ð°Ð»ÐµÐ½ ÑÑ€Ð¾Ðº (Ð´Ð½Ð¸ Ð¿Ñ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»Ð½Ð¾)
+              Минимален срок (дни предварително)
               <input type="number" min={0} value={settings.minLeadDays} onChange={e => setSettings({ ...settings, minLeadDays: Number(e.target.value) || 0 })} />
             </label>
             <button className="admin-btn admin-btn-primary admin-btn-sm" disabled={busy} type="button" onClick={saveSettings}>
-              <Save size={16} /> Ð—Ð°Ð¿Ð°Ð·Ð¸ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸
+              <Save size={16} /> Запази настройки
             </button>
           </div>
         )}
@@ -355,13 +355,13 @@ function AdminUpload({ onUrl, notify }: { onUrl: (url: string) => void; notify: 
       const r = await adminFetch("/api/admin/upload", { method: "POST", body: fd });
       const data = await r.json();
       if (!r.ok) {
-        notify("err", "ÐšÐ°Ñ‡Ð²Ð°Ð½ÐµÑ‚Ð¾ Ð½Ðµ ÑƒÑÐ¿Ñ.");
+        notify("err", "Качването не успя.");
         return;
       }
       onUrl(data.url);
-      notify("ok", "Ð¡Ð½Ð¸Ð¼ÐºÐ°Ñ‚Ð° Ðµ ÐºÐ°Ñ‡ÐµÐ½Ð°.");
+      notify("ok", "Снимката е качена.");
     } catch {
-      notify("err", "Ð“Ñ€ÐµÑˆÐºÐ° Ð¿Ñ€Ð¸ ÐºÐ°Ñ‡Ð²Ð°Ð½Ðµ.");
+      notify("err", "Грешка при качване.");
     } finally {
       setUploading(false);
     }
@@ -370,7 +370,7 @@ function AdminUpload({ onUrl, notify }: { onUrl: (url: string) => void; notify: 
     <label className="admin-upload-zone admin-upload-inline">
       <input type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" onChange={e => e.target.files?.[0] && upload(e.target.files[0])} />
       {uploading ? <Upload size={20} /> : <ImagePlus size={20} />}
-      <span>{uploading ? "ÐšÐ°Ñ‡Ð²Ð°Ð½Ðµâ€¦" : "ÐšÐ°Ñ‡Ð¸"}</span>
+      <span>{uploading ? "Качване…" : "Качи"}</span>
     </label>
   );
 }
@@ -396,65 +396,65 @@ function ShopProductEditor({
         <span className="admin-card-index">{String(index + 1).padStart(2, "0")}</span>
         <div>
           <strong>{product.title}</strong>
-          <small>{cat?.name || "â€”"} Â· {product.active ? "ÐÐºÑ‚Ð¸Ð²ÐµÐ½" : "Ð¡ÐºÑ€Ñ‹Ñ‚"} Â· {product.featured ? "â˜… Featured" : ""}</small>
+          <small>{cat?.name || "—"} · {product.active ? "Активен" : "Скрит"} · {product.featured ? "★ Топ" : ""}</small>
         </div>
         {open ? <ChevronUp /> : <ChevronDown />}
       </button>
       {open && (
         <div className="admin-card-body">
           <div className="admin-grid">
-            <label className="admin-field">Ð—Ð°Ð³Ð»Ð°Ð²Ð¸Ðµ<input value={product.title} onChange={e => onChange({ title: e.target.value, slug: slugify(e.target.value) })} /></label>
+            <label className="admin-field">Заглавие<input value={product.title} onChange={e => onChange({ title: e.target.value, slug: slugify(e.target.value) })} /></label>
             <label className="admin-field">Slug<input value={product.slug} onChange={e => onChange({ slug: slugify(e.target.value) })} /></label>
             <label className="admin-field">
-              ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ
+              Категория
               <select value={product.categoryId} onChange={e => onChange({ categoryId: e.target.value })}>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </label>
-            <label className="admin-field">Ð¦ÐµÐ½Ð°/Ð±Ñ€. (â‚¬)<input type="number" step="0.01" value={product.pricePerUnit} onChange={e => onChange({ pricePerUnit: Number(e.target.value) })} /></label>
-            <label className="admin-field">ÐœÐ¸Ð½. ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾<input type="number" value={product.minQuantity} onChange={e => onChange({ minQuantity: Number(e.target.value) })} /></label>
-            <label className="admin-field">Ð¡Ñ‚ÑŠÐ¿ÐºÐ°<input type="number" value={product.quantityStep} onChange={e => onChange({ quantityStep: Number(e.target.value) })} /></label>
-            <label className="admin-field wide">ÐšÑ€Ð°Ñ‚ÐºÐ¾ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ðµ<textarea value={product.shortDescription} onChange={e => onChange({ shortDescription: e.target.value })} /></label>
-            <label className="admin-field wide">ÐŸÐ¾Ð´Ñ€Ð¾Ð±Ð½Ð¾ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ðµ<textarea value={product.description} onChange={e => onChange({ description: e.target.value })} /></label>
-            <label className="admin-field">Ð Ð°Ð·Ð¼ÐµÑ€<textarea value={product.sizeInfo} onChange={e => onChange({ sizeInfo: e.target.value })} /></label>
-            <label className="admin-field">ÐžÐ¿Ð°ÐºÐ¾Ð²ÐºÐ°<textarea value={product.packagingInfo} onChange={e => onChange({ packagingInfo: e.target.value })} /></label>
-            <label className="admin-field wide">Ð—Ð° Ð¿Ñ€Ð¾Ð´ÑƒÐºÑ‚Ð°<textarea value={product.productInfo} onChange={e => onChange({ productInfo: e.target.value })} /></label>
+            <label className="admin-field">Цена/бр. (€)<input type="number" step="0.01" value={product.pricePerUnit} onChange={e => onChange({ pricePerUnit: Number(e.target.value) })} /></label>
+            <label className="admin-field">Мин. количество<input type="number" value={product.minQuantity} onChange={e => onChange({ minQuantity: Number(e.target.value) })} /></label>
+            <label className="admin-field">Стъпка<input type="number" value={product.quantityStep} onChange={e => onChange({ quantityStep: Number(e.target.value) })} /></label>
+            <label className="admin-field wide">Кратко описание<textarea value={product.shortDescription} onChange={e => onChange({ shortDescription: e.target.value })} /></label>
+            <label className="admin-field wide">Подробно описание<textarea value={product.description} onChange={e => onChange({ description: e.target.value })} /></label>
+            <label className="admin-field">Размер<textarea value={product.sizeInfo} onChange={e => onChange({ sizeInfo: e.target.value })} /></label>
+            <label className="admin-field">Опаковка<textarea value={product.packagingInfo} onChange={e => onChange({ packagingInfo: e.target.value })} /></label>
+            <label className="admin-field wide">За продукта<textarea value={product.productInfo} onChange={e => onChange({ productInfo: e.target.value })} /></label>
             <label className="admin-field">SEO title<input value={product.seoTitle} onChange={e => onChange({ seoTitle: e.target.value })} /></label>
             <label className="admin-field wide">SEO description<textarea value={product.seoDescription} onChange={e => onChange({ seoDescription: e.target.value })} /></label>
-            <label className="admin-check"><input type="checkbox" checked={product.active} onChange={e => onChange({ active: e.target.checked })} /> ÐÐºÑ‚Ð¸Ð²ÐµÐ½</label>
-            <label className="admin-check"><input type="checkbox" checked={product.featured} onChange={e => onChange({ featured: e.target.checked })} /> ÐÐ°Ð¹-Ð¿Ð¾Ñ€ÑŠÑ‡Ð²Ð°Ð½ (Ð½Ð°Ñ‡Ð°Ð»Ð½Ð° + Ð»ÐµÐ½Ñ‚Ð° Ð² Ð¼Ð°Ð³Ð°Ð·Ð¸Ð½Ð°)</label>
-            <label className="admin-check"><input type="checkbox" checked={product.inStock} onChange={e => onChange({ inStock: e.target.checked })} /> Ð’ Ð½Ð°Ð»Ð¸Ñ‡Ð½Ð¾ÑÑ‚</label>
+            <label className="admin-check"><input type="checkbox" checked={product.active} onChange={e => onChange({ active: e.target.checked })} /> Активен</label>
+            <label className="admin-check"><input type="checkbox" checked={product.featured} onChange={e => onChange({ featured: e.target.checked })} /> Най-поръчван (начална + лента в магазина)</label>
+            <label className="admin-check"><input type="checkbox" checked={product.inStock} onChange={e => onChange({ inStock: e.target.checked })} /> В наличност</label>
           </div>
 
           <div className="admin-block">
-            <h3>Ð¡Ð½Ð¸Ð¼ÐºÐ¸</h3>
+            <h3>Снимки</h3>
             <AdminUpload notify={notify} onUrl={url => onChange({ images: [...product.images, url] })} />
             <div className="admin-thumbs">
               {product.images.map(im => (
                 <div key={im}>
                   <img src={im} alt="" />
-                  <button type="button" aria-label="ÐŸÑ€ÐµÐ¼Ð°Ñ…Ð½Ð¸" onClick={() => onChange({ images: product.images.filter(x => x !== im) })}><Trash2 /></button>
+                  <button type="button" aria-label="Премахни" onClick={() => onChange({ images: product.images.filter(x => x !== im) })}><Trash2 /></button>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="admin-block">
-            <h3>Ð¦ÐµÐ½Ð¾Ð²Ð¸ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ð¸</h3>
-            <p className="admin-hint">ÐžÑÑ‚Ð°Ð²ÐµÑ‚Ðµ Ð¿Ñ€Ð°Ð·Ð½Ð¾ Ð·Ð° Ñ„Ð¸ÐºÑÐ¸Ñ€Ð°Ð½Ð° Ñ†ÐµÐ½Ð° Ð½Ð° Ð±Ñ€Ð¾Ð¹.</p>
+            <h3>Ценови диапазони</h3>
+            <p className="admin-hint">Оставете празно за фиксирана цена на брой.</p>
             {(product.priceTiers.length ? product.priceTiers : [{ min: 10, max: 19, pricePerUnit: product.pricePerUnit }]).map((t, i) => (
               <div key={i} className="admin-tier-row">
-                <input type="number" placeholder="ÐœÐ¸Ð½" value={t.min} onChange={e => {
+                <input type="number" placeholder="Мин" value={t.min} onChange={e => {
                   const tiers = [...product.priceTiers];
                   tiers[i] = { ...tiers[i], min: Number(e.target.value) };
                   onChange({ priceTiers: tiers });
                 }} />
-                <input type="number" placeholder="ÐœÐ°ÐºÑ" value={t.max ?? ""} onChange={e => {
+                <input type="number" placeholder="Макс" value={t.max ?? ""} onChange={e => {
                   const tiers = [...product.priceTiers];
                   tiers[i] = { ...tiers[i], max: e.target.value ? Number(e.target.value) : undefined };
                   onChange({ priceTiers: tiers });
                 }} />
-                <input type="number" step="0.01" placeholder="â‚¬/Ð±Ñ€" value={t.pricePerUnit} onChange={e => {
+                <input type="number" step="0.01" placeholder="€/бр" value={t.pricePerUnit} onChange={e => {
                   const tiers = [...product.priceTiers];
                   tiers[i] = { ...tiers[i], pricePerUnit: Number(e.target.value) };
                   onChange({ priceTiers: tiers });
@@ -462,12 +462,12 @@ function ShopProductEditor({
               </div>
             ))}
             <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => onChange({ priceTiers: [...product.priceTiers, { min: 50, pricePerUnit: product.pricePerUnit }] })}>
-              + Ð”Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½
+              + Диапазон
             </button>
           </div>
 
           <div className="admin-block">
-            <h3>ÐÐ°Ð»Ð¸Ñ‡Ð½Ð¸ Ñ„Ð¾Ñ€Ð¼Ð¸</h3>
+            <h3>Налични форми</h3>
             <div className="admin-check-grid">
               {shapes.map(s => (
                 <label key={s.id} className="admin-check">
@@ -489,7 +489,7 @@ function ShopProductEditor({
           <div className="admin-card-actions">
             <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => onMove("up")}>â†‘</button>
             <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => onMove("down")}>â†“</button>
-            <button type="button" className="admin-delete-row" onClick={onDelete}><Trash2 size={15} /> Ð˜Ð·Ñ‚Ñ€Ð¸Ð¹</button>
+            <button type="button" className="admin-delete-row" onClick={onDelete}><Trash2 size={15} /> Изтрий</button>
           </div>
         </div>
       )}
@@ -511,22 +511,22 @@ function CategoryEditor({ category, index, open, onToggle, onChange, onDelete, o
       {open && (
         <div className="admin-card-body">
           <div className="admin-grid">
-            <label className="admin-field">Ð˜Ð¼Ðµ<input value={category.name} onChange={e => onChange({ name: e.target.value, slug: slugify(e.target.value) })} /></label>
+            <label className="admin-field">Име<input value={category.name} onChange={e => onChange({ name: e.target.value, slug: slugify(e.target.value) })} /></label>
             <label className="admin-field">Slug<input value={category.slug} onChange={e => onChange({ slug: slugify(e.target.value) })} /></label>
-            <label className="admin-field wide">ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ<textarea value={category.description} onChange={e => onChange({ description: e.target.value })} /></label>
+            <label className="admin-field wide">Описание<textarea value={category.description} onChange={e => onChange({ description: e.target.value })} /></label>
             <label className="admin-field">SEO title<input value={category.seoTitle || ""} onChange={e => onChange({ seoTitle: e.target.value })} /></label>
             <label className="admin-field wide">SEO description<textarea value={category.seoDescription || ""} onChange={e => onChange({ seoDescription: e.target.value })} /></label>
-            <label className="admin-check"><input type="checkbox" checked={category.active} onChange={e => onChange({ active: e.target.checked })} /> ÐÐºÑ‚Ð¸Ð²Ð½Ð°</label>
+            <label className="admin-check"><input type="checkbox" checked={category.active} onChange={e => onChange({ active: e.target.checked })} /> Активна</label>
           </div>
           <div className="admin-block">
-            <h3>Ð˜Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ</h3>
+            <h3>Изображение</h3>
             {category.image && <img src={category.image} alt="" className="admin-preview-thumb" />}
             <AdminUpload notify={notify} onUrl={url => onChange({ image: url })} />
           </div>
           <div className="admin-card-actions">
             <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => onMove("up")}>â†‘</button>
             <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => onMove("down")}>â†“</button>
-            <button type="button" className="admin-delete-row" onClick={onDelete}><Trash2 size={15} /> Ð˜Ð·Ñ‚Ñ€Ð¸Ð¹</button>
+            <button type="button" className="admin-delete-row" onClick={onDelete}><Trash2 size={15} /> Изтрий</button>
           </div>
         </div>
       )}
@@ -542,25 +542,25 @@ function ShapeEditor({ shape, index, open, onToggle, onChange, onDelete, onMove,
     <div className="admin-card">
       <button className="admin-card-toggle" type="button" onClick={onToggle}>
         <span className="admin-card-index">{String(index + 1).padStart(2, "0")}</span>
-        <div><strong>{shape.label}</strong><small>{shape.addonPrice > 0 ? `+${shape.addonPrice.toFixed(2)} â‚¬/Ð±Ñ€` : "Ð‘ÐµÐ· Ð´Ð¾Ð¿Ð»Ð°Ñ‰Ð°Ð½Ðµ"}</small></div>
+        <div><strong>{shape.label}</strong><small>{shape.addonPrice > 0 ? `+${shape.addonPrice.toFixed(2)} €/бр` : "Без доплащане"}</small></div>
         {open ? <ChevronUp /> : <ChevronDown />}
       </button>
       {open && (
         <div className="admin-card-body">
           <div className="admin-grid">
-            <label className="admin-field">Ð˜Ð¼Ðµ<input value={shape.label} onChange={e => onChange({ label: e.target.value })} /></label>
-            <label className="admin-field">Ð”Ð¾Ð¿Ð»Ð°Ñ‰Ð°Ð½Ðµ (â‚¬/Ð±Ñ€)<input type="number" step="0.01" value={shape.addonPrice} onChange={e => onChange({ addonPrice: Number(e.target.value) })} /></label>
-            <label className="admin-check"><input type="checkbox" checked={shape.active} onChange={e => onChange({ active: e.target.checked })} /> ÐÐºÑ‚Ð¸Ð²Ð½Ð°</label>
+            <label className="admin-field">Име<input value={shape.label} onChange={e => onChange({ label: e.target.value })} /></label>
+            <label className="admin-field">Доплащане (€/бр)<input type="number" step="0.01" value={shape.addonPrice} onChange={e => onChange({ addonPrice: Number(e.target.value) })} /></label>
+            <label className="admin-check"><input type="checkbox" checked={shape.active} onChange={e => onChange({ active: e.target.checked })} /> Активна</label>
           </div>
           <div className="admin-block">
-            <h3>Ð˜Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ / Ð¸ÐºÐ¾Ð½ÐºÐ°</h3>
+            <h3>Изображение / иконка</h3>
             {shape.image && <img src={shape.image} alt="" className="admin-preview-thumb" />}
             <AdminUpload notify={notify} onUrl={url => onChange({ image: url })} />
           </div>
           <div className="admin-card-actions">
             <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => onMove("up")}>â†‘</button>
             <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => onMove("down")}>â†“</button>
-            <button type="button" className="admin-delete-row" onClick={onDelete}><Trash2 size={15} /> Ð˜Ð·Ñ‚Ñ€Ð¸Ð¹</button>
+            <button type="button" className="admin-delete-row" onClick={onDelete}><Trash2 size={15} /> Изтрий</button>
           </div>
         </div>
       )}
