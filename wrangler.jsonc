@@ -8,5 +8,8 @@
   "assets":{"directory":"dist/client","binding":"ASSETS","run_worker_first":false},
   "d1_databases":[{"binding":"DB","database_name":"sweetdetails-db","database_id":"19816e98-c7e7-4275-807b-481c62929cf3","migrations_dir":"drizzle"}],
   "r2_buckets":[{"binding":"BUCKET","bucket_name":"sweetdetails-media"}],
-  "observability":{"enabled":true}
+  "observability":{"enabled":true},
+  // Paid plan: allow enough CPU for SSR cold starts (Free was ~10ms → Error 1102).
+  // Cap at 500ms so a runaway request cannot burn the monthly CPU budget.
+  "limits":{"cpu_ms":500}
 }
