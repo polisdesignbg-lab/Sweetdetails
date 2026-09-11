@@ -71,10 +71,11 @@ const worker = {
     if (redirect) return redirect;
 
     const publicGet = isPublicGet(request);
-    const cache = caches.default;
+    // `caches` exists in Workers; Node/tests may not define it.
+    const cache = typeof caches !== "undefined" ? caches.default : undefined;
     const cacheKey = new Request(request.url, { method: "GET" });
 
-    if (publicGet) {
+    if (publicGet && cache) {
       const cached = await cache.match(cacheKey);
       if (cached) return cached;
     }
@@ -83,7 +84,7 @@ const worker = {
       const response = await handler.fetch(request, env, ctx);
       const out = publicGet ? withPublicHtmlCache(response) : withNoStoreHtml(response);
 
-      if (publicGet && out.ok) {
+      if (publicGet && out.ok && cache) {
         ctx.waitUntil(cache.put(cacheKey, out.clone()));
       }
 
