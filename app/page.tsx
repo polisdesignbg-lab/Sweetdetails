@@ -2,7 +2,7 @@ import { defaultSettings } from "@/lib/defaults";
 import { buildStructuredData, jsonLdScript } from "@/lib/seo";
 import Storefront from "./storefront";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export default function Home() {
   const content = { settings: defaultSettings };

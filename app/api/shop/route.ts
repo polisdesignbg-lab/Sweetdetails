@@ -4,7 +4,8 @@ export async function GET() {
   const catalog = await getShopCatalog();
   return Response.json(catalog, {
     headers: {
-      "cache-control": "public, max-age=30, s-maxage=60, stale-while-revalidate=120",
+      "cache-control":
+        "public, max-age=60, s-maxage=300, stale-while-revalidate=3600, stale-if-error=86400",
     },
   });
 }
