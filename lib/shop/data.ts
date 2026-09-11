@@ -111,6 +111,12 @@ function parseShopProduct(raw: string): ShopProduct | null {
   }
 }
 
+/** Per-isolate memo — avoids repeating seed/migration/catalog work on every request. */
+let seedChecked = false;
+let migrationDone = false;
+let catalogCache: { at: number; data: ShopCatalog } | null = null;
+const CATALOG_TTL_MS = 30_000;
+
 async function getShopSettings(): Promise<ShopSettings> {
   try {
     const row = await env.DB.prepare("SELECT data FROM settings WHERE id = 1").first<{ data: string }>();
@@ -131,13 +137,18 @@ async function saveShopSettings(settings: ShopSettings) {
   await env.DB.prepare("INSERT INTO settings (id, data) VALUES (1, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data")
     .bind(JSON.stringify(data))
     .run();
+  catalogCache = null;
 }
 
 async function migrateShopDefaults() {
+  if (migrationDone) return;
   try {
     const settings = await getShopSettings();
     const version = settings.catalogVersion ?? 0;
-    if (version >= 5) return;
+    if (version >= 5) {
+      migrationDone = true;
+      return;
+    }
 
     const productRows = await env.DB.prepare("SELECT id, data FROM products").all<{ id: string; data: string }>();
     const shapeRows = await env.DB.prepare("SELECT id, data FROM shapes").all<{ id: string; data: string }>();
@@ -159,14 +170,19 @@ async function migrateShopDefaults() {
 
     if (statements.length) await env.DB.batch(statements);
     await saveShopSettings({ minLeadDays: 14, catalogVersion: 5 });
+    migrationDone = true;
   } catch (err) {
     console.error("[shop] migrateShopDefaults failed:", err);
   }
 }
 
 async function seedIfEmpty() {
+  if (seedChecked) return;
   const catCount = await env.DB.prepare("SELECT COUNT(*) as c FROM categories").first<{ c: number }>();
-  if (catCount && catCount.c > 0) return;
+  if (catCount && catCount.c > 0) {
+    seedChecked = true;
+    return;
+  }
 
   await env.DB.prepare("DELETE FROM products").run();
   const batch = [
@@ -185,6 +201,7 @@ async function seedIfEmpty() {
   ];
   await env.DB.batch(batch);
   await saveShopSettings(defaultShopSettings);
+  seedChecked = true;
 }
 
 export async function getCategories(includeInactive = false): Promise<ShopCategory[]> {
@@ -209,6 +226,7 @@ export async function saveCategories(categories: ShopCategory[]) {
         .bind(c.id, c.slug, JSON.stringify({ ...c, position: i }), i, c.active ? 1 : 0),
     ),
   ]);
+  catalogCache = null;
 }
 
 export async function getShapes(includeInactive = false): Promise<ShopShape[]> {
@@ -228,6 +246,7 @@ export async function saveShapes(shapes: ShopShape[]) {
         .bind(s.id, JSON.stringify({ ...s, position: i }), i, s.active ? 1 : 0),
     ),
   ]);
+  catalogCache = null;
 }
 
 export async function getShopProducts(includeInactive = false): Promise<ShopProduct[]> {
@@ -252,6 +271,7 @@ export async function saveShopProducts(products: ShopProduct[]) {
         .bind(p.id, p.slug, JSON.stringify({ ...p, position: i }), i, p.active ? 1 : 0),
     ),
   ]);
+  catalogCache = null;
 }
 
 export async function ensureShopMigrated() {
@@ -260,6 +280,9 @@ export async function ensureShopMigrated() {
 }
 
 export async function getShopCatalog(): Promise<ShopCatalog> {
+  if (catalogCache && Date.now() - catalogCache.at < CATALOG_TTL_MS) {
+    return catalogCache.data;
+  }
   await ensureShopMigrated();
   const [categories, shapes, products, settings] = await Promise.all([
     getCategories(),
@@ -267,7 +290,9 @@ export async function getShopCatalog(): Promise<ShopCatalog> {
     getShopProducts(),
     getShopSettings(),
   ]);
-  return { categories, shapes, products, settings };
+  const catalog = { categories, shapes, products, settings };
+  catalogCache = { at: Date.now(), data: catalog };
+  return catalog;
 }
 
 export async function getOrders(): Promise<ShopOrder[]> {
