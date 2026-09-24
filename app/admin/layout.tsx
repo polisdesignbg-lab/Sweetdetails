@@ -3,6 +3,21 @@ import "../../public/admin.css";
 
 export const metadata: Metadata = {
   title: "Админ | Sweet Details",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    noarchive: true,
+    nosnippet: true,
+    noimageindex: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      noarchive: true,
+      nosnippet: true,
+    },
+  },
   manifest: "/admin-manifest.webmanifest",
   appleWebApp: {
     capable: true,

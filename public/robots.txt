@@ -1,12 +1,14 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /admin
 Disallow: /admin/
 Disallow: /_next/
 
 User-agent: Googlebot
 Allow: /
 Disallow: /api/
+Disallow: /admin
 Disallow: /admin/
 
 User-agent: Googlebot-Image

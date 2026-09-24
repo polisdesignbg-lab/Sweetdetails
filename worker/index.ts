@@ -59,6 +59,20 @@ function withNoStoreHtml(response: Response): Response {
   );
 }
 
+/** Keep admin login/dashboard out of search engines. */
+function withAdminNoIndex(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set(
+    "X-Robots-Tag",
+    "noindex, nofollow, noarchive, nosnippet, noimageindex",
+  );
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function maybeRedirect(request: Request): Response | null {
   const url = new URL(request.url);
   if (url.hostname !== "www.sweetdetails.ink") return null;
@@ -141,10 +155,12 @@ const worker = {
       const response = await handler.fetch(request, env, ctx);
 
       let out = response;
-      if (cacheable) {
+      if (isAdminPath(url.pathname)) {
+        out = withAdminNoIndex(withNoStoreHtml(response));
+      } else if (cacheable) {
         if (isPublicApi(url.pathname)) {
           out = withCacheHeaders(response, PUBLIC_API_CACHE);
-        } else if (isHtmlLike(response) && !isAdminPath(url.pathname)) {
+        } else if (isHtmlLike(response)) {
           out = withCacheHeaders(response, PUBLIC_HTML_CACHE);
         }
       } else {
