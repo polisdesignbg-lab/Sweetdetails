@@ -2,7 +2,41 @@ import type { Metadata, Viewport } from "next";
 import "../../public/admin.css";
 
 export const metadata: Metadata = {
-  title: "Админ | Sweet Details",
+  // absolute avoids the root "%s | Sweet Details" template doubling the brand
+  title: { absolute: "Вход" },
+  description: null,
+  keywords: [],
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    noarchive: true,
+    nosnippet: true,
+    noimageindex: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      noarchive: true,
+      nosnippet: true,
+    },
+  },
+  openGraph: {
+    title: "Вход",
+    description: "",
+    url: "/admin",
+    images: [],
+  },
+  twitter: {
+    card: "summary",
+    title: "Вход",
+    description: "",
+    images: [],
+  },
+  alternates: {
+    canonical: null,
+    languages: {},
+  },
   manifest: "/admin-manifest.webmanifest",
   appleWebApp: {
     capable: true,
